@@ -13,7 +13,7 @@ library IEEE;
 library altera; 
 use IEEE.std_logic_1164.all;
 use IEEE.std_logic_unsigned.all;
-use altera.altera_primitives_components.all;
+--use altera.altera_primitives_components.all;
 
 entity VGA_PAL is
 	generic 
@@ -431,17 +431,29 @@ VGA_KGI  <= '0' when (VGA_V <= VGA_KGI1_END)
 
 LINEBUF: entity work.linebuf
 port map (
-	address_a => VIDEO_V(0) & VIDEO_H(9 downto 0),
-	clock_a 	 => CLK2,
-	data_a 	 => RGB,
-	wren_a 	 => '1',
-	q_a 		 => open,
+--	address_a => VIDEO_V(0) & VIDEO_H(9 downto 0),
+--	clock_a 	 => CLK2,
+--	data_a 	 => RGB,
+--	wren_a 	 => '1',
+--	q_a 		 => open,
 	
-	address_b => (not VIDEO_V(0)) & VGA_H(8 downto 0) & VGA_H0,
-	clock_b 	 => VGA_RBGI_CLK,
-	data_b 	 => (others => '1'),
-	wren_b 	 => '0',
-	q_b 		 => RD_REG
+--	address_b => (not VIDEO_V(0)) & VGA_H(8 downto 0) & VGA_H0,
+--	clock_b 	 => VGA_RBGI_CLK,
+--	data_b 	 => (others => '1'),
+--	wren_b 	 => '0',
+--	q_b 		 => RD_REG
+
+	addra => VIDEO_V(0) & VIDEO_H(9 downto 0),
+	clka => CLK2,
+	dia => RGB,
+	wea => '1',
+	doa => open,
+	
+	addrb => (not VIDEO_V(0)) & VGA_H(8 downto 0) & VGA_H0,
+	clkb => VGA_RBGI_CLK,
+	dib => (others => '1'),
+	web => '0',
+	dob => RD_REG
 );
 
 process (VGA_RBGI_CLK)

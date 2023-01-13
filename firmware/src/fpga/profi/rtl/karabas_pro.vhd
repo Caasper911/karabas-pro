@@ -533,39 +533,44 @@ begin
 -- PLL1
 U1: entity work.altpll0
 port map (
-	inclk0			=> CLK_50MHZ,
-	locked			=> open,
-	c0 				=> clk_112
+	reset 			=> '0',
+	refclk			=> CLK_50MHZ,
+	extlock			=> open,
+	clk0_out			=> clk_112 
 	);
 	
 -- PLL2
 U2: entity work.altpll1
 port map (
-	inclk0			=> clk_112,
-	locked 			=> open,
-	c0 				=> clk_84,
-	c1 				=> clk_72,
-	c2 				=> clk_28,
-	c3 				=> clk_24,
-	c4 				=> clk_8);
+	reset 			=> '0',
+	refclk 			=> clk_112,
+	extlock 			=> open,
+	clk0_out 				=> clk_84,
+	clk1_out 				=> clk_72,
+	clk2_out 				=> clk_28,
+	clk3_out 				=> clk_24,
+	clk4_out 				=> clk_8);
+		
+	clk_bus <= clk_28 when ds80='0' else clk_24;
+	clk_bus_port <= clk_84 when ds80='0' else clk_72;	
 		
 -- main clock selector
-U3: entity work.clk_ctrl
-port map(
-	clkselect 	=> ds80,
-	inclk0x 		=> clk_28,
-	inclk1x 		=> clk_24,
-	outclk 		=> clk_bus
-);
+--U3: entity work.clk_ctrl
+--port map(
+--	clkselect 	=> ds80,
+--	inclk0x 		=> clk_28,
+--	inclk1x 		=> clk_24,
+--	outclk 		=> clk_bus 
+--);
 
 -- Bus Port clock selector
-U4: entity work.clk_ctrl2
-port map(
-	clkselect 	=> ds80,
-	inclk0x 		=> clk_84,
-	inclk1x 		=> clk_72,
-	outclk 		=> clk_bus_port
-);
+--U4: entity work.clk_ctrl2
+--port map(
+--	clkselect 	=> ds80,
+--	inclk0x 		=> clk_84,
+--	inclk1x 		=> clk_72,
+--	outclk 		=> clk_bus_port
+--);
 
 -- Zilog Z80A CPU
 U5: entity work.T80a

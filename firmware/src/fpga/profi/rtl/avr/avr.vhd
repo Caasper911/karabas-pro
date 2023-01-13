@@ -422,40 +422,66 @@ begin
 	-- memory for rtc registers
 	URTC: entity work.rtc 
 	port map (
-		wrclock	 => CLK,
-		data		 => rtcw_di,
-		wraddress => rtcw_a,
-		wren 		 => rtcw_wr,
+--		wrclock	 => CLK,
+--		data		 => rtcw_di,
+--		wraddress => rtcw_a,
+--		wren 		 => rtcw_wr,		
+--		rdclock 	 => CLK,
+--		rdaddress => RTC_A,
+--		q			 => rtcr_do
+		clka => CLK,
+		addra => rtcw_a,
+		dia => rtcw_di,
+		doa => open,
+		wea => rtcw_wr,
 		
-		rdclock 	 => CLK,
-		rdaddress => RTC_A,
-		q			 => rtcr_do
+		clkb => CLK,
+		addrb => RTC_A,
+		dib => "11111111",
+		dob => rtcr_do,
+		web => '0'
 	);
 	RTC_DO <= rtcr_do;
 	
 	-- fifo for write commands to send them on avr side 
 	UFIFO: entity work.queue 
 	port map (
-		data 		=> queue_di,
-		wrreq 	=> queue_wr_req,
-		wrclk 	=> CLK,
-		wrfull 	=> queue_wr_full,
-		wrusedw	=> queue_wr_size,
+--		data 		=> queue_di,
+--		wrreq 	=> queue_wr_req,
+--		wrclk 	=> CLK,
+--		wrfull 	=> queue_wr_full,
+--		wrusedw	=> queue_wr_size,
 		
-		rdreq 	=> queue_rd_req,
-		rdclk 	=> CLK,
-		q 			=> queue_do,
-		rdempty 	=> queue_rd_empty,
-		rdusedw 	=> queue_rd_size
+--		rdreq 	=> queue_rd_req,
+--		rdclk 	=> CLK,
+--		q 			=> queue_do,
+--		rdempty 	=> queue_rd_empty,
+--		rdusedw 	=> queue_rd_size
+		rst => not(N_RESET),
+		clkw => CLK,
+		di => queue_di,
+		we => queue_wr_req,
+		full_flag => queue_wr_full,
+		wrusedw => queue_wr_size,		
+		
+		clkr => CLK,
+		do => queue_do,
+		re => queue_rd_req,
+		empty_flag => queue_rd_empty,
+		rdusedw => queue_rd_size
 	);
 	
 	-- messages rom (to get a build num)
 	U_MESSAGES: entity work.message_rom 
 	port map (
-		address 		=> build_read_addr, -- build version starts from 504
-		clock   		=> CLK,
-		q       		=> build_byte
-	);	
+		--address 		=> build_read_addr, -- build version starts from 504
+		--clock   		=> CLK,
+		--q       		=> build_byte
+		addra => build_read_addr,
+		clka => CLK,
+		doa => build_byte,
+		rsta => not(N_RESET)
+	);
 		
 	-- fifo handling / queue commands to avr side
 	process(CLK, CLKEN, N_RESET, LOADER_DONE, CFG, RTC_WR_N, RTC_CS, queue_wr_full, RTC_A, RTC_DI, LED1, LED2, LED1_OWR, LED2_OWR, queue_wr_req, queue_rd_empty)

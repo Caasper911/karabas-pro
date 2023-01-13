@@ -22,15 +22,7 @@ entity icons is
 end entity;
 
 architecture rtl of icons is
-
-	 component rom_font2
-    port (
-        address : in std_logic_vector(10 downto 0);
-        clock   : in std_logic;
-        q       : out std_logic_vector(0 downto 0)
-    );
-    end component;	 
-
+	 
 	 signal icon_addr : std_logic_vector(10 downto 0);
 	 
 	 signal paper_icon_fd : std_logic := '0';
@@ -67,11 +59,12 @@ architecture rtl of icons is
 begin
 
 	 -- иконки
-	 U_FONT_ICONS: rom_font2
+	 U_FONT_ICONS: entity work.rom_font2
     port map (
-        address => icon_addr,
-        clock   => CLK,
-        q       => icon_pixel
+    		rsta => '0',
+        addra => icon_addr,
+        clka   => CLK,
+        doa       => icon_pixel
     );
 		
 	 icon_x <= hcnt(3 downto 0);

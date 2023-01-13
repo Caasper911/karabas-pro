@@ -1,0 +1,34 @@
+standard
+***Report Model: karabas_pro***
+
+IO Statistics
+#IO                    92
+  #input               10
+  #output              57
+  #inout               25
+
+Gate Statistics
+#Basic gates         1074
+  #and                254
+  #nand                 0
+  #or                 174
+  #nor                  2
+  #xor                  2
+  #xnor                 0
+  #buf                  0
+  #not                 51
+  #bufif1              13
+  #MX21               120
+  #FADD                 0
+  #DFF                444
+  #LATCH               14
+#MACRO_ADD             44
+#MACRO_EQ              56
+#MACRO_MUX            306
+
+Report Hierarchy Area:
++----------------------------------------------+
+|Instance |Module      |gates  |seq    |macros |
++----------------------------------------------+
+|top      |karabas_pro |616    |458    |107    |
++----------------------------------------------+

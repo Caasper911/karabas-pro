@@ -272,15 +272,20 @@ begin
 	end process;
 			
 	-- data buffer mux
-	U_MUX: entity work.mmux
-	port map(
-		data0x => "01" & ms_buf(17 downto 12),
-		data1x => "00" & ms_buf(11 downto 6),
-		data2x => "00" & ms_buf(5 downto 0),
-		data3x => "00000000",
-		sel => std_logic_vector(cnt_byte),
-		result => do_reg 
-	);
+	do_reg <= "01" & ms_buf(17 downto 12) when cnt_byte = 0 else 
+			"00" & ms_buf(11 downto 6) when cnt_byte = 1 else 
+			"00" & ms_buf(5 downto 0) when cnt_byte = 2 else 
+			"00000000";	
+	
+--	U_MUX: entity work.mmux
+--	port map(
+--		data0x => "01" & ms_buf(17 downto 12),
+--		data1x => "00" & ms_buf(11 downto 6),
+--		data2x => "00" & ms_buf(5 downto 0),
+--		data3x => "00000000",
+--		sel => std_logic_vector(cnt_byte),
+--		result => do_reg 
+--	);
 	
 	-- hardware int
 	U_INT: entity work.hw_int 

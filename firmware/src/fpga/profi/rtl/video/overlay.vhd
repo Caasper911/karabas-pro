@@ -28,27 +28,7 @@ entity overlay is
 end entity;
 
 architecture rtl of overlay is
-
-	 component rom_font1
-    port (
-        address : in std_logic_vector(10 downto 0);
-        clock   : in std_logic;
-        q       : out std_logic_vector(7 downto 0)
-    );
-    end component;
 	 
-    component screen1
-    port (
-        data    	: in std_logic_vector(15 downto 0);
-        rdaddress : in std_logic_vector(9 downto 0);
-        rdclock  	: in std_logic;
-        wraddress : in std_logic_vector(9 downto 0);
-        wrclock   : in std_logic;
-        wren      : in std_logic;
-        q         : out std_logic_vector(15 downto 0)
-    );
-    end component;
-
     signal video_on : std_logic;
 	 signal rgb: std_logic_vector(8 downto 0);
 
@@ -92,11 +72,12 @@ architecture rtl of overlay is
 begin
 
 	 -- знакогенератор
-	 U_FONT: rom_font1
+	 U_FONT: entity work.rom_font1
     port map (
-        address => rom_addr,
-        clock   => CLK2,
-        q       => font_word
+    		rsta => '0',
+        addra => rom_addr,
+        clka   => CLK2,
+        doa       => font_word
     );
 
 	 -- иконки
@@ -118,15 +99,19 @@ begin
     );
 
 	 -- видеопамять OSD
-    U_VRAM: screen1 
+    U_VRAM: entity work.screen1 
     port map (
-        data    => vram_di,
-        rdaddress => addr_read,
-        rdclock   => CLK2,
-        wraddress => addr_write,
-        wrclock   => CLK,
-        wren      => vram_wr,
-        q         => vram_do
+		dia     => vram_di,  
+		addra   => addr_write,
+		wea 		=> vram_wr,
+		doa 		=> open,
+		clka 	=> CLK,
+		
+		dib 		=> (others => '1'),
+		addrb 	=> addr_read,
+		web		=> '0',
+		dob 		=>  vram_do,
+		clkb 	=> CLK2 
     );
 
 	 flash <= BLINK;

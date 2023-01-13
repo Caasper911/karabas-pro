@@ -1,0 +1,22 @@
+============================================================
+   Tang Dynasty, V4.6.18154
+   Copyright:   Shanghai Anlogic Infotech Co., Ltd.
+                2011 - 2021
+   Executable = /opt/Tang/bin/td
+   Built by =   andy
+   Built at =   2020, мар 27
+   Run by =     andy
+   Run Date =   Fri Jan 13 01:45:11 2023
+
+   Run on =     andy-asus
+============================================================
+RUN-1002 : start command "import_device al3_10.db -package LQFP144 -basic"
+RUN-1002 : start command "read_verilog -file al_ip/rom_font1.v"
+HDL-1007 : analyze verilog file al_ip/rom_font1.v
+HDL-1007 : elaborate module rom_font1 in al_ip/rom_font1.v(14)
+HDL-1007 : elaborate module AL_LOGIC_BRAM(DATA_WIDTH_A=8,DATA_WIDTH_B=8,ADDR_WIDTH_A=11,ADDR_WIDTH_B=11,DATA_DEPTH_A=2048,DATA_DEPTH_B=2048,MODE="SP",INIT_FILE="../../../rtl/video/font.mif") in /opt/Tang/arch/al3_macro.v(744)
+HDL-1200 : Current top model is rom_font1
+HDL-1100 : Inferred 0 RAMs.
+RUN-1002 : start command "optimize_rtl"
+RUN-1001 : Open license file /opt/Tang/license/Anlogic.lic
+RUN-8418 ERROR: License expired!

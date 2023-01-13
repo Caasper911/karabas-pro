@@ -76,15 +76,21 @@ begin
 		end if;
 	end process;
 
-	UMUX: entity work.bus_mux
-	port map(
-		data0x => bus_a_reg(15 downto 8),
-		data1x => bus_a_reg(7 downto 0),
-		data2x => bus_d_reg,
-		data3x => "11111111",
-		sel => cnt,
-		result => SD(7 downto 0)
-	);
+	SD(7 downto 0) <= 
+		bus_a_reg(15 downto 8) when cnt=0 else 
+		bus_a_reg(7 downto 0) when cnt=1 else 
+		bus_d_reg when cnt=2 else 
+		"11111111";
+
+--	UMUX: entity work.bus_mux
+--	port map(
+--		data0x => bus_a_reg(15 downto 8),
+--		data1x => bus_a_reg(7 downto 0),
+--		data2x => bus_d_reg,
+--		data3x => "11111111",
+--		sel => cnt,
+--		result => SD(7 downto 0)
+--	);
 
 end RTL;
 

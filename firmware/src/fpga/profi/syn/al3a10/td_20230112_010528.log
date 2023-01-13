@@ -1,0 +1,22 @@
+============================================================
+   Tang Dynasty, V4.6.18154
+   Copyright:   Shanghai Anlogic Infotech Co., Ltd.
+                2011 - 2021
+   Executable = /opt/Tang/bin/td
+   Built by =   andy
+   Built at =   2020, мар 27
+   Run by =     andy
+   Run Date =   Thu Jan 12 01:05:28 2023
+
+   Run on =     andy-asus
+============================================================
+RUN-1002 : start command "import_device al3_10.db -package LQFP144 -basic"
+RUN-1002 : start command "read_verilog -file al_ip/queue.v"
+HDL-1007 : analyze verilog file al_ip/queue.v
+HDL-1007 : elaborate module queue in al_ip/queue.v(14)
+HDL-1007 : elaborate module AL_LOGIC_RAMFIFO(DATA_WIDTH=24) in /opt/Tang/arch/al3_macro.v(2)
+HDL-1200 : Current top model is queue
+HDL-1100 : Inferred 0 RAMs.
+RUN-1002 : start command "optimize_rtl"
+RUN-1001 : Open license file /opt/Tang/license/Anlogic.lic
+RUN-8418 ERROR: License expired!

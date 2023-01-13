@@ -1,0 +1,121 @@
+standard
+***Report Model: karabas_pro***
+
+IO Statistics
+#IO                    92
+  #input               10
+  #output              57
+  #inout               25
+
+Utilization Statistics
+#lut                  590   out of   8640    6.83%
+#reg                  416   out of   8640    4.81%
+#le                   619
+  #lut only           203   out of    619   32.79%
+  #reg only            29   out of    619    4.68%
+  #lut&reg            387   out of    619   62.52%
+#dsp                    0   out of      3    0.00%
+#bram                   7   out of     48   14.58%
+  #bram9k               7
+  #fifo9k               0
+#bram32k                0   out of      2    0.00%
+#pad                   89   out of     93   95.70%
+  #ireg                 2
+  #oreg                12
+  #treg                 0
+#pll                    2   out of      2  100.00%
+
+
+Detailed IO Report
+
+Name           Direction     Location     IOStandard     DriveStrength     PackReg                  
+AVR_MOSI       INPUT         P90          LVCMOS25       N/A               IREG                     
+AVR_NCS        INPUT         P88          LVCMOS25       N/A               NONE                     
+AVR_SCK        INPUT         P89          LVCMOS25       N/A               NONE                     
+CLK_50MHZ      INPUT         P23          LVCMOS25       N/A               NONE                     
+PIN_25         INPUT         P25          LVCMOS25       N/A               NONE                     
+SD_NDET        INPUT         P91          LVCMOS25       N/A               NONE                     
+UART_RX        INPUT         P2           LVCMOS25       N/A               IREG                     
+ASDO           OUTPUT        P13          LVCMOS25       8                 NONE                     
+AVR_MISO       OUTPUT        P87          LVCMOS25       8                 NONE                     
+BUZZER         OUTPUT        P86          LVCMOS25       8                 NONE                     
+CPLD_CLK       OUTPUT        P113         LVCMOS25       8                 NONE                     
+CPLD_CLK2      OUTPUT        P112         LVCMOS25       8                 NONE                     
+DCLK           OUTPUT        P6           LVCMOS25       8                 NONE                     
+NCSO           OUTPUT        P8           LVCMOS25       8                 NONE                     
+NRESET         OUTPUT        P114         LVCMOS25       8                 NONE                     
+PIN_120        OUTPUT        P120         LVCMOS25       8                 NONE                     
+PIN_121        OUTPUT        P121         LVCMOS25       8                 NONE                     
+PIN_138        OUTPUT        P138         LVCMOS25       8                 NONE                     
+PIN_141        OUTPUT        P141         LVCMOS25       8                 NONE                     
+PIN_7          OUTPUT        P7           LVCMOS25       8                 NONE                     
+SA[1]          OUTPUT        P106         LVCMOS25       8                 NONE                     
+SA[0]          OUTPUT        P110         LVCMOS25       8                 NONE                     
+SDIR           OUTPUT        P111         LVCMOS25       8                 OREG                     
+SD_NCS         OUTPUT        P11          LVCMOS25       8                 NONE                     
+SND_BS         OUTPUT        P144         LVCMOS25       8                 NONE                     
+SND_DAT        OUTPUT        P142         LVCMOS25       8                 NONE                     
+SND_WS         OUTPUT        P143         LVCMOS25       8                 NONE                     
+SRAM_A[20]     OUTPUT        P44          LVCMOS25       8                 NONE                     
+SRAM_A[19]     OUTPUT        P59          LVCMOS25       8                 NONE                     
+SRAM_A[18]     OUTPUT        P64          LVCMOS25       8                 NONE                     
+SRAM_A[17]     OUTPUT        P65          LVCMOS25       8                 NONE                     
+SRAM_A[16]     OUTPUT        P46          LVCMOS25       8                 NONE                     
+SRAM_A[15]     OUTPUT        P49          LVCMOS25       8                 NONE                     
+SRAM_A[14]     OUTPUT        P50          LVCMOS25       8                 NONE                     
+SRAM_A[13]     OUTPUT        P51          LVCMOS25       8                 NONE                     
+SRAM_A[12]     OUTPUT        P52          LVCMOS25       8                 NONE                     
+SRAM_A[11]     OUTPUT        P53          LVCMOS25       8                 NONE                     
+SRAM_A[10]     OUTPUT        P54          LVCMOS25       8                 NONE                     
+SRAM_A[9]      OUTPUT        P55          LVCMOS25       8                 NONE                     
+SRAM_A[8]      OUTPUT        P58          LVCMOS25       8                 NONE                     
+SRAM_A[7]      OUTPUT        P66          LVCMOS25       8                 NONE                     
+SRAM_A[6]      OUTPUT        P67          LVCMOS25       8                 NONE                     
+SRAM_A[5]      OUTPUT        P68          LVCMOS25       8                 NONE                     
+SRAM_A[4]      OUTPUT        P69          LVCMOS25       8                 NONE                     
+SRAM_A[3]      OUTPUT        P70          LVCMOS25       8                 NONE                     
+SRAM_A[2]      OUTPUT        P71          LVCMOS25       8                 NONE                     
+SRAM_A[1]      OUTPUT        P72          LVCMOS25       8                 NONE                     
+SRAM_A[0]      OUTPUT        P33          LVCMOS25       8                 NONE                     
+SRAM_NRD       OUTPUT        P34          LVCMOS25       8                 NONE                     
+SRAM_NWR       OUTPUT        P60          LVCMOS25       8                 NONE                     
+TAPE_OUT       OUTPUT        P10          LVCMOS25       8                 NONE                     
+UART_CTS       OUTPUT        P3           LVCMOS25       8                 NONE                     
+UART_TX        OUTPUT        P1           LVCMOS25       8                 NONE                     
+VGA_B[2]       OUTPUT        P128         LVCMOS25       8                 OREG                     
+VGA_B[1]       OUTPUT        P127         LVCMOS25       8                 OREG                     
+VGA_B[0]       OUTPUT        P126         LVCMOS25       8                 OREG                     
+VGA_G[2]       OUTPUT        P133         LVCMOS25       8                 OREG                     
+VGA_G[1]       OUTPUT        P132         LVCMOS25       8                 OREG                     
+VGA_G[0]       OUTPUT        P129         LVCMOS25       8                 OREG                     
+VGA_HS         OUTPUT        P125         LVCMOS25       8                 OREG                     
+VGA_R[2]       OUTPUT        P137         LVCMOS25       8                 OREG                     
+VGA_R[1]       OUTPUT        P136         LVCMOS25       8                 OREG                     
+VGA_R[0]       OUTPUT        P135         LVCMOS25       8                 OREG                     
+VGA_VS         OUTPUT        P124         LVCMOS25       8                 OREG                     
+SD[15]         INOUT         P73          LVCMOS25       8                 NONE                     
+SD[14]         INOUT         P74          LVCMOS25       8                 NONE                     
+SD[13]         INOUT         P75          LVCMOS25       8                 NONE                     
+SD[12]         INOUT         P76          LVCMOS25       8                 NONE                     
+SD[11]         INOUT         P77          LVCMOS25       8                 NONE                     
+SD[10]         INOUT         P80          LVCMOS25       8                 NONE                     
+SD[9]          INOUT         P83          LVCMOS25       8                 NONE                     
+SD[8]          INOUT         P84          LVCMOS25       8                 NONE                     
+SD[7]          INOUT         P85          LVCMOS25       8                 NONE                     
+SD[6]          INOUT         P98          LVCMOS25       8                 NONE                     
+SD[5]          INOUT         P99          LVCMOS25       8                 NONE                     
+SD[4]          INOUT         P100         LVCMOS25       8                 NONE                     
+SD[3]          INOUT         P101         LVCMOS25       8                 NONE                     
+SD[2]          INOUT         P103         LVCMOS25       8                 NONE                     
+SD[1]          INOUT         P104         LVCMOS25       8                 NONE                     
+SD[0]          INOUT         P105         LVCMOS25       8                 NONE                     
+SD_MOSI        INOUT         P115         LVCMOS25       8                 NONE                     
+SRAM_D[7]      INOUT         P43          LVCMOS25       8                 NONE                     
+SRAM_D[6]      INOUT         P42          LVCMOS25       8                 NONE                     
+SRAM_D[5]      INOUT         P39          LVCMOS25       8                 NONE                     
+SRAM_D[4]      INOUT         P38          LVCMOS25       8                 NONE                     
+SRAM_D[3]      INOUT         P28          LVCMOS25       8                 NONE                     
+SRAM_D[2]      INOUT         P30          LVCMOS25       8                 NONE                     
+SRAM_D[1]      INOUT         P31          LVCMOS25       8                 NONE                     
+SRAM_D[0]      INOUT         P32          LVCMOS25       8                 NONE                     
+

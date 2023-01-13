@@ -1,0 +1,33 @@
+standard
+***Report Model: karabas_pro***
+
+IO Statistics
+#IO                    92
+  #input               10
+  #output              57
+  #inout               25
+
+Utilization Statistics
+#lut                  590   out of   8640    6.83%
+#reg                  416   out of   8640    4.81%
+#le                   619
+  #lut only           203   out of    619   32.79%
+  #reg only            29   out of    619    4.68%
+  #lut&reg            387   out of    619   62.52%
+#dsp                    0   out of      3    0.00%
+#bram                   7   out of     48   14.58%
+  #bram9k               7
+  #fifo9k               0
+#bram32k                0   out of      2    0.00%
+#pad                   89   out of     93   95.70%
+  #ireg                 2
+  #oreg                12
+  #treg                 0
+#pll                    2   out of      2  100.00%
+
+Report Hierarchy Area:
++-------------------------------------------+
+|Instance |Module      |le    |lut   |seq   |
++-------------------------------------------+
+|top      |karabas_pro |619   |590   |416   |
++-------------------------------------------+

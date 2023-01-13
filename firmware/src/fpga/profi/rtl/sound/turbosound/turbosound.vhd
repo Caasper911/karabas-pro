@@ -39,28 +39,28 @@ architecture rtl of turbosound is
 	signal bdir	: std_logic;
 	signal ssg	: std_logic;
 	
-component ym2149 is
-port (
-	CLK		: in std_logic;				-- Global clock
-	CE		: in std_logic;				-- PSG Clock enable
-	RESET		: in std_logic;				-- Chip RESET (set all Registers to '0', active hi)
-	BDIR		: in std_logic;				-- Bus Direction (0 - read , 1 - write)
-	BC		: in std_logic;				-- Bus control
-	DI		: in std_logic_vector(7 downto 0);	-- Data In
-	DO		: out std_logic_vector(7 downto 0);	-- Data Out
-	CHANNEL_A	: out std_logic_vector(7 downto 0);	-- PSG Output channel A
-	CHANNEL_B	: out std_logic_vector(7 downto 0);	-- PSG Output channel B
-	CHANNEL_C	: out std_logic_vector(7 downto 0);	-- PSG Output channel C
-	SEL		: in std_logic;
-	MODE		: in std_logic;
-	ACTIVE		: out std_logic_vector(5 downto 0);
-	A8			: in std_logic;
-	IOA_in	: in std_logic_vector(7 downto 0);
-	IOA_out : out std_logic_vector(7 downto 0);
-	IOB_in :  in std_logic_vector(7 downto 0);
-	IOB_out : out std_logic_vector(7 downto 0)
-);
-end component;
+--component ym2149 is
+--port (
+--	CLK		: in std_logic;				-- Global clock
+--	CE		: in std_logic;				-- PSG Clock enable
+--	RESET		: in std_logic;				-- Chip RESET (set all Registers to '0', active hi)
+--	BDIR		: in std_logic;				-- Bus Direction (0 - read , 1 - write)
+--	BC		: in std_logic;				-- Bus control
+--	DI		: in std_logic_vector(7 downto 0);	-- Data In
+--	DO		: out std_logic_vector(7 downto 0);	-- Data Out
+--	CHANNEL_A	: out std_logic_vector(7 downto 0);	-- PSG Output channel A
+--	CHANNEL_B	: out std_logic_vector(7 downto 0);	-- PSG Output channel B
+--	CHANNEL_C	: out std_logic_vector(7 downto 0);	-- PSG Output channel C
+--	SEL		: in std_logic;
+--	MODE		: in std_logic;
+--	ACTIVE		: out std_logic_vector(5 downto 0);
+--	A8			: in std_logic;
+--	IOA_in	: in std_logic_vector(7 downto 0);
+--	IOA_out : out std_logic_vector(7 downto 0);
+--	IOB_in :  in std_logic_vector(7 downto 0);
+--	IOB_out : out std_logic_vector(7 downto 0)
+--);
+--end component;
 	
 	
 begin
@@ -83,7 +83,7 @@ bc1	<= '1' when (I_M1_N = '1' and I_IORQ_N = '0' and I_ADDR(15) = '1' and I_ADDR
 		end if;
 	end process;
 
-ssg0: ym2149
+ssg0: entity work.ym2149
 port map (
 	CLK		=> I_CLK,	
 	CE		=> I_ENA,
@@ -96,8 +96,8 @@ port map (
 	CHANNEL_B	=> O_SSG0_AUDIO_B,
 	CHANNEL_C	=> O_SSG0_AUDIO_C,
 	ACTIVE		=> open,
-	SEL		=> '0',
-	A8		=> not ssg,
+	SEL		=> not ssg, --'0',
+--	A8		=> not ssg,
 	MODE		=> I_MODE,
 	IOA_in => (others => '0'),
 	IOA_out => open,
@@ -105,7 +105,7 @@ port map (
 	IOB_out => open
 );
 	
-ssg1: ym2149
+ssg1: entity work.ym2149
 port map (
 	CLK		=> I_CLK,	
 	CE		=> I_ENA,
@@ -118,8 +118,8 @@ port map (
 	CHANNEL_B	=> O_SSG1_AUDIO_B,
 	CHANNEL_C	=> O_SSG1_AUDIO_C,
 	ACTIVE		=> open,
-	SEL		=> '0',
-	A8		=> ssg,
+	SEL		=> ssg, --'0',
+--	A8		=> ssg,
 	MODE		=> I_MODE,
 	IOA_in => (others => '0'),
 	IOA_out => open,
