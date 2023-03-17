@@ -1,0 +1,141 @@
+============================================================
+   Tang Dynasty, V4.6.18154
+   Copyright:   Shanghai Anlogic Infotech Co., Ltd.
+                2011 - 2021
+   Executable = /opt/Tang/bin/td
+   Built by =   andy
+   Built at =   2020, мар 27
+   Run by =     andy
+   Run Date =   Fri Jan 13 16:54:51 2023
+
+   Run on =     andy-asus
+============================================================
+RUN-1002 : start command "open_project karabas_pro.al"
+GUI-8003 ERROR: ../../../../../../../../../../../../../opt/Tang/bin/../../rtl/avr/spi_slave.vhd is missing!
+HDL-1007 : analyze VHDL file ../../rtl/spi/spi_slave.vhd
+HDL-1007 : analyze entity spi_slave in ../../rtl/spi/spi_slave.vhd(120)
+HDL-1007 : analyze architecture rtl in ../../rtl/spi/spi_slave.vhd(152)
+HDL-5007 WARNING: case choice must be a locally static expression in ../../rtl/spi/spi_slave.vhd(311)
+HDL-5007 WARNING: case choice must be a locally static expression in ../../rtl/spi/spi_slave.vhd(315)
+HDL-5007 WARNING: case choice must be a locally static expression in ../../rtl/spi/spi_slave.vhd(319)
+HDL-1007 : analyze VHDL file al_ip/rtc.vhd
+HDL-1007 : analyze entity rtc in al_ip/rtc.vhd(17)
+HDL-1007 : analyze architecture struct in al_ip/rtc.vhd(33)
+HDL-1007 : analyze verilog file al_ip/queue.v
+HDL-1007 : analyze VHDL file al_ip/message_rom.vhd
+HDL-1007 : analyze entity message_rom in al_ip/message_rom.vhd(17)
+HDL-1007 : analyze architecture struct in al_ip/message_rom.vhd(27)
+HDL-1007 : analyze VHDL file ../../rtl/avr/avr.vhd
+HDL-1007 : analyze entity avr in ../../rtl/avr/avr.vhd(11)
+HDL-1007 : analyze architecture rtl in ../../rtl/avr/avr.vhd(71)
+HDL-1007 : analyze VHDL file ../../rtl/board/board.vhd
+HDL-1007 : analyze entity board in ../../rtl/board/board.vhd(10)
+HDL-1007 : analyze architecture rtl in ../../rtl/board/board.vhd(28)
+HDL-1007 : analyze VHDL file ../../rtl/clock/clk_ctrl2.vhd
+HDL-1007 : analyze entity clk_ctrl2_altclkctrl_9gi in ../../rtl/clock/clk_ctrl2.vhd(46)
+HDL-1007 : analyze architecture rtl in ../../rtl/clock/clk_ctrl2.vhd(56)
+HDL-1007 : analyze entity clk_ctrl2 in ../../rtl/clock/clk_ctrl2.vhd(155)
+HDL-1007 : analyze architecture rtl in ../../rtl/clock/clk_ctrl2.vhd(166)
+HDL-1007 : analyze VHDL file ../../rtl/dac/tda1543.vhd
+HDL-1007 : analyze entity tda1543 in ../../rtl/dac/tda1543.vhd(42)
+HDL-1007 : analyze architecture tda1543_arch in ../../rtl/dac/tda1543.vhd(56)
+HDL-1007 : analyze VHDL file ../../rtl/spi/spi_master.vhd
+HDL-1007 : analyze entity spi_master in ../../rtl/spi/spi_master.vhd(30)
+HDL-1007 : analyze architecture logic in ../../rtl/spi/spi_master.vhd(52)
+HDL-1007 : analyze VHDL file ../../rtl/flash/flash.vhd
+HDL-1007 : analyze entity flash in ../../rtl/flash/flash.vhd(17)
+HDL-1007 : analyze architecture rtl in ../../rtl/flash/flash.vhd(55)
+HDL-1007 : analyze VHDL file al_ip/altpll0.vhd
+HDL-1007 : analyze entity altpll0 in al_ip/altpll0.vhd(28)
+HDL-1007 : analyze architecture rtl in al_ip/altpll0.vhd(35)
+HDL-1007 : analyze VHDL file al_ip/altpll1.vhd
+HDL-1007 : analyze entity altpll1 in al_ip/altpll1.vhd(32)
+HDL-1007 : analyze architecture rtl in al_ip/altpll1.vhd(43)
+HDL-1007 : analyze VHDL file ../../rtl/t80se/T80_MCode.vhd
+HDL-1007 : analyze entity t80_mcode in ../../rtl/t80se/T80_MCode.vhd(80)
+HDL-1007 : analyze architecture rtl in ../../rtl/t80se/T80_MCode.vhd(152)
+HDL-1007 : analyze VHDL file ../../rtl/t80se/T80_ALU.vhd
+HDL-1007 : analyze entity t80_alu in ../../rtl/t80se/T80_ALU.vhd(76)
+HDL-1007 : analyze architecture rtl in ../../rtl/t80se/T80_ALU.vhd(105)
+HDL-1007 : analyze VHDL file ../../rtl/t80se/T80_Reg.vhd
+HDL-1007 : analyze entity t80_reg in ../../rtl/t80se/T80_Reg.vhd(77)
+HDL-1007 : analyze architecture rtl in ../../rtl/t80se/T80_Reg.vhd(100)
+HDL-1007 : analyze VHDL file ../../rtl/t80se/T80.vhd
+HDL-1007 : analyze entity t80 in ../../rtl/t80se/T80.vhd(85)
+HDL-1007 : analyze architecture rtl in ../../rtl/t80se/T80.vhd(130)
+HDL-1007 : analyze VHDL file ../../rtl/t80se/T80a.vhd
+HDL-1007 : analyze entity t80a in ../../rtl/t80se/T80a.vhd(66)
+HDL-1007 : analyze architecture rtl in ../../rtl/t80se/T80a.vhd(93)
+HDL-1007 : analyze VHDL file ../../rtl/memory/altram1.vhd
+HDL-1007 : analyze entity altram1 in ../../rtl/memory/altram1.vhd(42)
+HDL-1007 : analyze architecture syn in ../../rtl/memory/altram1.vhd(59)
+HDL-1007 : analyze VHDL file ../../rtl/memory/memory.vhd
+HDL-1007 : analyze entity memory in ../../rtl/memory/memory.vhd(10)
+HDL-1007 : analyze architecture rtl in ../../rtl/memory/memory.vhd(77)
+HDL-1007 : analyze VHDL file ../../rtl/video/pentagon_video.vhd
+HDL-1007 : analyze entity pentagon_video in ../../rtl/video/pentagon_video.vhd(10)
+HDL-1007 : analyze architecture rtl in ../../rtl/video/pentagon_video.vhd(44)
+HDL-1007 : analyze VHDL file ../../rtl/video/profi_video.vhd
+HDL-1007 : analyze entity profi_video in ../../rtl/video/profi_video.vhd(10)
+HDL-1007 : analyze architecture rtl in ../../rtl/video/profi_video.vhd(46)
+HDL-1007 : analyze VHDL file ../../rtl/video/video.vhd
+HDL-1007 : analyze entity video in ../../rtl/video/video.vhd(10)
+HDL-1007 : analyze architecture rtl in ../../rtl/video/video.vhd(61)
+HDL-1007 : analyze VHDL file al_ip/rom_font1.vhd
+HDL-1007 : analyze entity rom_font1 in al_ip/rom_font1.vhd(17)
+HDL-1007 : analyze architecture struct in al_ip/rom_font1.vhd(27)
+HDL-1007 : analyze VHDL file al_ip/rom_font2.vhd
+HDL-1007 : analyze entity rom_font2 in al_ip/rom_font2.vhd(17)
+HDL-1007 : analyze architecture struct in al_ip/rom_font2.vhd(27)
+HDL-1007 : analyze VHDL file ../../rtl/video/icons.vhd
+HDL-1007 : analyze entity icons in ../../rtl/video/icons.vhd(6)
+HDL-1007 : analyze architecture rtl in ../../rtl/video/icons.vhd(24)
+HDL-1007 : analyze VHDL file al_ip/screen1.vhd
+HDL-1007 : analyze entity screen1 in al_ip/screen1.vhd(17)
+HDL-1007 : analyze architecture struct in al_ip/screen1.vhd(33)
+HDL-1007 : analyze VHDL file ../../rtl/video/overlay.vhd
+HDL-1007 : analyze entity overlay in ../../rtl/video/overlay.vhd(6)
+HDL-1007 : analyze architecture rtl in ../../rtl/video/overlay.vhd(30)
+HDL-1007 : analyze VHDL file al_ip/linebuf.vhd
+HDL-1007 : analyze entity linebuf in al_ip/linebuf.vhd(17)
+HDL-1007 : analyze architecture struct in al_ip/linebuf.vhd(33)
+HDL-1007 : analyze VHDL file ../../rtl/video/vga_pal.vhd
+HDL-1007 : analyze entity vga_pal in ../../rtl/video/vga_pal.vhd(18)
+HDL-1007 : analyze architecture rtl in ../../rtl/video/vga_pal.vhd(50)
+HDL-1007 : analyze VHDL file ../../rtl/loader/loader.vhd
+HDL-1007 : analyze entity loader in ../../rtl/loader/loader.vhd(21)
+HDL-1007 : analyze architecture rtl in ../../rtl/loader/loader.vhd(59)
+HDL-1007 : analyze verilog file ../../rtl/sound/turbosound/ym2149.v
+HDL-5007 WARNING: identifier 'ymreg' is used before its declaration in ../../rtl/sound/turbosound/ym2149.v(67)
+HDL-5007 WARNING: identifier 'ymreg' is used before its declaration in ../../rtl/sound/turbosound/ym2149.v(68)
+HDL-5007 WARNING: identifier 'ymreg' is used before its declaration in ../../rtl/sound/turbosound/ym2149.v(69)
+HDL-5007 WARNING: identifier 'dout' is used before its declaration in ../../rtl/sound/turbosound/ym2149.v(110)
+HDL-1007 : analyze VHDL file ../../rtl/sound/turbosound/turbosound.vhd
+HDL-1007 : analyze entity turbosound in ../../rtl/sound/turbosound/turbosound.vhd(10)
+HDL-1007 : analyze architecture rtl in ../../rtl/sound/turbosound/turbosound.vhd(37)
+HDL-1007 : analyze VHDL file ../../rtl/sound/covox/covox.vhd
+HDL-1007 : analyze entity covox in ../../rtl/sound/covox/covox.vhd(14)
+HDL-1007 : analyze architecture covox_unit in ../../rtl/sound/covox/covox.vhd(36)
+HDL-1007 : analyze VHDL file ../../rtl/storage/bus_port.vhd
+HDL-1007 : analyze entity bus_port in ../../rtl/storage/bus_port.vhd(6)
+HDL-1007 : analyze architecture rtl in ../../rtl/storage/bus_port.vhd(41)
+HDL-1007 : analyze VHDL file ../../rtl/mouse/hw_int.vhd
+HDL-1007 : analyze entity hw_int in ../../rtl/mouse/hw_int.vhd(6)
+HDL-1007 : analyze architecture rtl in ../../rtl/mouse/hw_int.vhd(32)
+HDL-1007 : analyze VHDL file ../../rtl/mouse/serial_mouse.vhd
+HDL-1007 : analyze entity serial_mouse in ../../rtl/mouse/serial_mouse.vhd(10)
+HDL-1007 : analyze architecture rtl in ../../rtl/mouse/serial_mouse.vhd(39)
+HDL-1007 : analyze VHDL file ../../rtl/sd/zc_spi.vhd
+HDL-1007 : analyze entity zc_spi in ../../rtl/sd/zc_spi.vhd(5)
+HDL-1007 : analyze architecture spi_rtl in ../../rtl/sd/zc_spi.vhd(20)
+HDL-1007 : analyze VHDL file ../../rtl/karabas_pro.vhd
+HDL-1007 : analyze entity karabas_pro in ../../rtl/karabas_pro.vhd(31)
+HDL-1007 : analyze architecture rtl in ../../rtl/karabas_pro.vhd(109)
+HDL-1007 : analyze VHDL file al_ip/screen2.vhd
+HDL-1007 : analyze entity screen2 in al_ip/screen2.vhd(17)
+HDL-1007 : analyze architecture struct in al_ip/screen2.vhd(33)
+HDL-1007 : analyze verilog file ../../rtl/uart/uart.v
+HDL-1007 : analyze verilog file ../../rtl/uart/zxunoregs.v
+HDL-1007 : analyze verilog file ../../rtl/uart/zxunouart.v
+RUN-1002 : start command "import_device al3_10.db -package LQFP144"
+GUI-8003 ERROR: ../../../../../../../../../../../../../opt/Tang/bin/../../rtl/avr/spi_slave.vhd is missing!

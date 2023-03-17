@@ -1,5 +1,5 @@
 // Verilog netlist created by TD v4.6.18154
-// Fri Jan 13 13:44:45 2023
+// Mon Jan 16 12:36:04 2023
 
 `timescale 1ns / 1ps
 module karabas_pro  // ../../rtl/karabas_pro.vhd(31)
@@ -8637,7 +8637,7 @@ module karabas_pro  // ../../rtl/karabas_pro.vhd(31)
     .d({\U9/VIDEO_V [7],\U9/SSI }),
     .f({_al_u1982_o,open_n6593}),
     .q({open_n6597,\U9/SSI_2 }));  // ../../rtl/video/vga_pal.vhd(197)
-  // ../../rtl/memory/memory.vhd(248)
+  // ../../rtl/memory/memory.vhd(178)
   AL_PHY_MSLICE #(
     //.LUT0("(~D)"),
     //.LUT1("(D*C*B*A)"),
@@ -8659,7 +8659,7 @@ module karabas_pro  // ../../rtl/karabas_pro.vhd(31)
     .clk(clk_28),
     .d({\U9/VIDEO_H [5],vid_rd}),
     .f({_al_u1984_o,open_n6614}),
-    .q({open_n6618,vid_rd}));  // ../../rtl/memory/memory.vhd(248)
+    .q({open_n6618,vid_rd}));  // ../../rtl/memory/memory.vhd(178)
   AL_PHY_MSLICE #(
     //.LUT0("(~0*~(D*C*B*A))"),
     //.LUT1("(~1*~(D*C*B*A))"),

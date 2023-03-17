@@ -1,5 +1,5 @@
 // Verilog netlist created by TD v4.6.18154
-// Fri Jan 13 13:44:42 2023
+// Mon Jan 16 12:36:01 2023
 
 `timescale 1ns / 1ps
 module karabas_pro  // ../../rtl/karabas_pro.vhd(31)
@@ -3787,14 +3787,14 @@ module karabas_pro  // ../../rtl/karabas_pro.vhd(31)
     .stdby(1'b0),
     .clkc({clk_8,open_n25,clk_28,open_n26,\U2/clkc_wire [0]}));  // al_ip/altpll1.vhd(51)
   not \U23/u4  (vid_scandoubler_enable, soft_sw[1]);  // ../../rtl/board/board.vhd(35)
-  not \U6/u35  (\U6/n24 , vid_rd);  // ../../rtl/memory/memory.vhd(218)
+  not \U6/u35  (\U6/n24 , vid_rd);  // ../../rtl/memory/memory.vhd(148)
   bufif1 \U6/u47  (vid_do_bus[2], 1'b0, 1'b1);  // ../../rtl/memory/memory.vhd(39)
   bufif1 \U6/u49  (vid_do_bus[3], 1'b0, 1'b1);  // ../../rtl/memory/memory.vhd(39)
   bufif1 \U6/u51  (vid_do_bus[4], 1'b0, 1'b1);  // ../../rtl/memory/memory.vhd(39)
   bufif1 \U6/u53  (vid_do_bus[5], 1'b0, 1'b1);  // ../../rtl/memory/memory.vhd(39)
   bufif1 \U6/u56  (vid_do_bus[6], 1'b0, 1'b1);  // ../../rtl/memory/memory.vhd(39)
   bufif1 \U6/u59  (vid_do_bus[7], 1'b0, 1'b1);  // ../../rtl/memory/memory.vhd(39)
-  not \U6/u8  (\U6/n48 , clk_div2);  // ../../rtl/memory/memory.vhd(182)
+  not \U6/u8  (\U6/n48 , clk_div2);  // ../../rtl/memory/memory.vhd(112)
   bufif1 \U6/u86  (vid_do_bus[1], 1'b0, 1'b1);  // ../../rtl/memory/memory.vhd(39)
   bufif1 \U6/u88  (vid_do_bus[0], 1'b0, 1'b1);  // ../../rtl/memory/memory.vhd(39)
   reg_ar_as_w1 \U6/vid_rd_reg  (
@@ -3803,7 +3803,7 @@ module karabas_pro  // ../../rtl/karabas_pro.vhd(31)
     .en(~clk_div2),
     .reset(1'b0),
     .set(1'b0),
-    .q(vid_rd));  // ../../rtl/memory/memory.vhd(248)
+    .q(vid_rd));  // ../../rtl/memory/memory.vhd(178)
   reg_ar_as_w1 \U7/U_PENT/HSYNC_reg  (
     .clk(clk_28),
     .d(\U7/U_PENT/n40 ),

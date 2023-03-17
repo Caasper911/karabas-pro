@@ -25,12 +25,10 @@
             <File>../../rtl/avr/avr.vhd</File>
             <File>../../../../../../../../../../../../../opt/Tang/bin/../../rtl/avr/spi_slave.vhd</File>
             <File>../../rtl/board/board.vhd</File>
-            <File>../../rtl/clock/clk_ctrl2.vhd</File>
             <File>../../rtl/dac/tda1543.vhd</File>
             <File>../../rtl/flash/flash.vhd</File>
             <File>../../rtl/karabas_pro.vhd</File>
             <File>../../rtl/loader/loader.vhd</File>
-            <File>../../rtl/memory/altram1.vhd</File>
             <File>../../rtl/memory/memory.vhd</File>
             <File>../../rtl/mouse/hw_int.vhd</File>
             <File>../../rtl/mouse/serial_mouse.vhd</File>
@@ -59,7 +57,6 @@
             <File>al_ip/rom_font1.vhd</File>
             <File>al_ip/rom_font2.vhd</File>
             <File>al_ip/screen1.vhd</File>
-            <File>al_ip/screen2.vhd</File>
         </VHDL>
         <ADC_FILE>karabas_pro.adc</ADC_FILE>
         <SDC_FILE/>
@@ -73,9 +70,12 @@
         <RouteProperty/>
         <TimingProperty/>
         <SimProperty/>
+        <BitgenProperty::GeneralOption>
+            <bin>on</bin>
+        </BitgenProperty::GeneralOption>
     </Property>
     <Project_Settings>
-        <Step_Last_Change>2023-01-13 15:17:45</Step_Last_Change>
+        <Step_Last_Change>2023-01-16 12:55:03</Step_Last_Change>
         <Current_Step>60</Current_Step>
         <Step_Status>true</Step_Status>
     </Project_Settings>

@@ -1,5 +1,5 @@
 // Verilog netlist created by TD v4.6.18154
-// Fri Jan 13 13:44:36 2023
+// Mon Jan 16 12:35:55 2023
 
 `timescale 1ns / 1ps
 module karabas_pro  // ../../rtl/karabas_pro.vhd(31)
@@ -7889,254 +7889,254 @@ module memory  // ../../rtl/memory/memory.vhd(10)
     .d(n71),
     .reset(1'b0),
     .set(1'b0),
-    .q(CONTENDED));  // ../../rtl/memory/memory.vhd(320)
+    .q(CONTENDED));  // ../../rtl/memory/memory.vhd(250)
   AL_DFF block_reg_reg (
     .clk(CLK_CPU),
     .d(n67),
     .reset(1'b0),
     .set(1'b0),
-    .q(block_reg));  // ../../rtl/memory/memory.vhd(307)
+    .q(block_reg));  // ../../rtl/memory/memory.vhd(237)
   eq_w2 eq0 (
     .i0(2'b00),
     .i1(A[15:14]),
-    .o(n55));  // ../../rtl/memory/memory.vhd(255)
+    .o(n55));  // ../../rtl/memory/memory.vhd(185)
   eq_w2 eq1 (
     .i0(2'b01),
     .i1(mux),
-    .o(n68));  // ../../rtl/memory/memory.vhd(310)
+    .o(n68));  // ../../rtl/memory/memory.vhd(240)
   binary_mux_s1_w14 mux0 (
     .i0(A[13:0]),
     .i1(VA),
     .sel(vbus_mode),
-    .o(n20));  // ../../rtl/memory/memory.vhd(210)
+    .o(n20));  // ../../rtl/memory/memory.vhd(140)
   binary_mux_s1_w7 mux1 (
     .i0(7'b0000000),
     .i1({5'b01110,VID_PAGE,1'b0}),
     .sel(n27),
-    .o(n28));  // ../../rtl/memory/memory.vhd(219)
+    .o(n28));  // ../../rtl/memory/memory.vhd(149)
   binary_mux_s1_w7 mux2 (
     .i0(n28),
     .i1({5'b00001,VID_PAGE,1'b0}),
     .sel(n26),
-    .o(n29));  // ../../rtl/memory/memory.vhd(218)
+    .o(n29));  // ../../rtl/memory/memory.vhd(148)
   binary_mux_s1_w7 mux3 (
     .i0(n29),
     .i1({5'b00001,VID_PAGE,1'b1}),
     .sel(n23),
-    .o(n30));  // ../../rtl/memory/memory.vhd(217)
+    .o(n30));  // ../../rtl/memory/memory.vhd(147)
   binary_mux_s1_w7 mux4 (
     .i0(ram_page[6:0]),
     .i1(n30),
     .sel(vbus_mode),
-    .o(n31));  // ../../rtl/memory/memory.vhd(216)
+    .o(n31));  // ../../rtl/memory/memory.vhd(146)
   binary_mux_s1_w7 mux5 (
     .i0(n31),
     .i1({3'b100,EXT_ROM_BANK,rom_page}),
     .sel(n21),
-    .o(n32));  // ../../rtl/memory/memory.vhd(215)
+    .o(n32));  // ../../rtl/memory/memory.vhd(145)
   binary_mux_s1_w2 mux6 (
     .i0(2'b00),
     .i1(RAM_EXT[4:3]),
     .sel(RAM_6MB),
-    .o(n62));  // ../../rtl/memory/memory.vhd(291)
+    .o(n62));  // ../../rtl/memory/memory.vhd(221)
   binary_mux_s1_w18 mux7 (
     .i0({1'b0,n62,RAM_EXT[2:0],RAM_BANK,9'b000000101}),
     .i1({10'b0000001110,n62,RAM_EXT[2:0],RAM_BANK}),
     .sel(SCO),
-    .o({n63,n61}));  // ../../rtl/memory/memory.vhd(294)
+    .o({n63,n61}));  // ../../rtl/memory/memory.vhd(224)
   binary_mux_s2_w9 mux8 (
     .i0(9'b000000000),
     .i1(n61),
     .i2({6'b000000,SCR,2'b10}),
     .i3(n63),
     .sel(mux),
-    .o({open_n0,open_n1,ram_page[6:0]}));  // ../../rtl/memory/memory.vhd(296)
+    .o({open_n0,open_n1,ram_page[6:0]}));  // ../../rtl/memory/memory.vhd(226)
   binary_mux_s1_w21 mux9 (
     .i0({n32,n20}),
     .i1(loader_ram_a),
     .sel(loader_act),
-    .o(MA));  // ../../rtl/memory/memory.vhd(220)
+    .o(MA));  // ../../rtl/memory/memory.vhd(150)
   reg_ar_as_w8 reg0 (
     .clk(n47),
     .d(MD),
     .reset(8'b00000000),
     .set(8'b00000000),
-    .q(buf_md));  // ../../rtl/memory/memory.vhd(232)
-  or u10 (n6, n48, n5);  // ../../rtl/memory/memory.vhd(182)
-  and u100 (n69, page_cont, block_reg);  // ../../rtl/memory/memory.vhd(315)
-  and u101 (n70, n69, COUNT_BLOCK);  // ../../rtl/memory/memory.vhd(315)
-  and u102 (n71, n70, n22);  // ../../rtl/memory/memory.vhd(315)
-  buf u11 (VBUS_MODE_O, vbus_mode);  // ../../rtl/memory/memory.vhd(184)
-  buf u12 (VID_RD_O, vid_rd);  // ../../rtl/memory/memory.vhd(185)
-  and u13 (n7, is_rom, n2);  // ../../rtl/memory/memory.vhd(188)
-  and u14 (n8, vbus_mode, n6);  // ../../rtl/memory/memory.vhd(189)
-  not u15 (n9, vbus_mode);  // ../../rtl/memory/memory.vhd(190)
-  and u16 (n10, n9, n2);  // ../../rtl/memory/memory.vhd(190)
-  and u17 (n11, n10, n0);  // ../../rtl/memory/memory.vhd(190)
-  or u18 (n12, n7, n8);  // ../../rtl/memory/memory.vhd(190)
-  or u19 (n13, n12, n11);  // ../../rtl/memory/memory.vhd(190)
-  not u2 (n0, N_MREQ);  // ../../rtl/memory/memory.vhd(181)
-  not u20 (n14, n13);  // ../../rtl/memory/memory.vhd(190)
+    .q(buf_md));  // ../../rtl/memory/memory.vhd(162)
+  or u10 (n6, n48, n5);  // ../../rtl/memory/memory.vhd(112)
+  and u100 (n69, page_cont, block_reg);  // ../../rtl/memory/memory.vhd(245)
+  and u101 (n70, n69, COUNT_BLOCK);  // ../../rtl/memory/memory.vhd(245)
+  and u102 (n71, n70, n22);  // ../../rtl/memory/memory.vhd(245)
+  buf u11 (VBUS_MODE_O, vbus_mode);  // ../../rtl/memory/memory.vhd(114)
+  buf u12 (VID_RD_O, vid_rd);  // ../../rtl/memory/memory.vhd(115)
+  and u13 (n7, is_rom, n2);  // ../../rtl/memory/memory.vhd(118)
+  and u14 (n8, vbus_mode, n6);  // ../../rtl/memory/memory.vhd(119)
+  not u15 (n9, vbus_mode);  // ../../rtl/memory/memory.vhd(120)
+  and u16 (n10, n9, n2);  // ../../rtl/memory/memory.vhd(120)
+  and u17 (n11, n10, n0);  // ../../rtl/memory/memory.vhd(120)
+  or u18 (n12, n7, n8);  // ../../rtl/memory/memory.vhd(120)
+  or u19 (n13, n12, n11);  // ../../rtl/memory/memory.vhd(120)
+  not u2 (n0, N_MREQ);  // ../../rtl/memory/memory.vhd(111)
+  not u20 (n14, n13);  // ../../rtl/memory/memory.vhd(120)
   AL_MUX u21 (
     .i0(n14),
     .i1(1'b1),
     .sel(loader_act),
-    .o(N_MRD));  // ../../rtl/memory/memory.vhd(191)
-  and u22 (n15, n9, is_ram);  // ../../rtl/memory/memory.vhd(194)
-  and u23 (n16, n15, n1);  // ../../rtl/memory/memory.vhd(194)
-  and u24 (n17, n16, n5);  // ../../rtl/memory/memory.vhd(194)
-  not u25 (n18, n17);  // ../../rtl/memory/memory.vhd(194)
-  not u26 (n19, loader_ram_wr);  // ../../rtl/memory/memory.vhd(193)
+    .o(N_MRD));  // ../../rtl/memory/memory.vhd(121)
+  and u22 (n15, n9, is_ram);  // ../../rtl/memory/memory.vhd(124)
+  and u23 (n16, n15, n1);  // ../../rtl/memory/memory.vhd(124)
+  and u24 (n17, n16, n5);  // ../../rtl/memory/memory.vhd(124)
+  not u25 (n18, n17);  // ../../rtl/memory/memory.vhd(124)
+  not u26 (n19, loader_ram_wr);  // ../../rtl/memory/memory.vhd(123)
   AL_MUX u27 (
     .i0(n18),
     .i1(n19),
     .sel(loader_act),
-    .o(N_MWR));  // ../../rtl/memory/memory.vhd(195)
-  buf u28 (N_CE1, 1'b0);  // ../../rtl/memory/memory.vhd(198)
-  buf u29 (N_CE2, 1'b1);  // ../../rtl/memory/memory.vhd(199)
-  not u3 (n1, N_WR);  // ../../rtl/memory/memory.vhd(181)
-  and u30 (is_buf_wr, n9, n5);  // ../../rtl/memory/memory.vhd(202)
-  buf u31 (DO[0], buf_md[0]);  // ../../rtl/memory/memory.vhd(204)
-  and u32 (n21, is_rom, n9);  // ../../rtl/memory/memory.vhd(215)
-  not u33 (n22, DS80);  // ../../rtl/memory/memory.vhd(217)
-  and u34 (n23, vbus_mode, n22);  // ../../rtl/memory/memory.vhd(217)
-  not u35 (n24, vid_rd);  // ../../rtl/memory/memory.vhd(218)
-  and u36 (n25, vbus_mode, DS80);  // ../../rtl/memory/memory.vhd(218)
-  and u37 (n26, n25, n24);  // ../../rtl/memory/memory.vhd(218)
-  and u38 (n27, n25, vid_rd);  // ../../rtl/memory/memory.vhd(219)
-  not u39 (n33, N_IORQ);  // ../../rtl/memory/memory.vhd(224)
-  not u4 (n2, N_RD);  // ../../rtl/memory/memory.vhd(181)
-  and u40 (n34, n33, N_M1);  // ../../rtl/memory/memory.vhd(224)
-  or u41 (n35, is_ram, n34);  // ../../rtl/memory/memory.vhd(224)
-  and u42 (n36, n9, n35);  // ../../rtl/memory/memory.vhd(224)
-  and u43 (n37, n36, n1);  // ../../rtl/memory/memory.vhd(224)
+    .o(N_MWR));  // ../../rtl/memory/memory.vhd(125)
+  buf u28 (N_CE1, 1'b0);  // ../../rtl/memory/memory.vhd(128)
+  buf u29 (N_CE2, 1'b1);  // ../../rtl/memory/memory.vhd(129)
+  not u3 (n1, N_WR);  // ../../rtl/memory/memory.vhd(111)
+  and u30 (is_buf_wr, n9, n5);  // ../../rtl/memory/memory.vhd(132)
+  buf u31 (DO[0], buf_md[0]);  // ../../rtl/memory/memory.vhd(134)
+  and u32 (n21, is_rom, n9);  // ../../rtl/memory/memory.vhd(145)
+  not u33 (n22, DS80);  // ../../rtl/memory/memory.vhd(147)
+  and u34 (n23, vbus_mode, n22);  // ../../rtl/memory/memory.vhd(147)
+  not u35 (n24, vid_rd);  // ../../rtl/memory/memory.vhd(148)
+  and u36 (n25, vbus_mode, DS80);  // ../../rtl/memory/memory.vhd(148)
+  and u37 (n26, n25, n24);  // ../../rtl/memory/memory.vhd(148)
+  and u38 (n27, n25, vid_rd);  // ../../rtl/memory/memory.vhd(149)
+  not u39 (n33, N_IORQ);  // ../../rtl/memory/memory.vhd(154)
+  not u4 (n2, N_RD);  // ../../rtl/memory/memory.vhd(111)
+  and u40 (n34, n33, N_M1);  // ../../rtl/memory/memory.vhd(154)
+  or u41 (n35, is_ram, n34);  // ../../rtl/memory/memory.vhd(154)
+  and u42 (n36, n9, n35);  // ../../rtl/memory/memory.vhd(154)
+  and u43 (n37, n36, n1);  // ../../rtl/memory/memory.vhd(154)
   AL_MUX u44 (
     .i0(D[7]),
     .i1(loader_ram_do[7]),
     .sel(loader_act),
-    .o(n38));  // ../../rtl/memory/memory.vhd(225)
-  or u45 (n39, loader_act, n37);  // ../../rtl/memory/memory.vhd(225)
+    .o(n38));  // ../../rtl/memory/memory.vhd(155)
+  or u45 (n39, loader_act, n37);  // ../../rtl/memory/memory.vhd(155)
   AL_MUX u46 (
     .i0(D[6]),
     .i1(loader_ram_do[6]),
     .sel(loader_act),
-    .o(n40));  // ../../rtl/memory/memory.vhd(225)
+    .o(n40));  // ../../rtl/memory/memory.vhd(155)
   bufif1 u47 (MD[2], n44, n39);  // ../../rtl/memory/memory.vhd(39)
   AL_MUX u48 (
     .i0(D[5]),
     .i1(loader_ram_do[5]),
     .sel(loader_act),
-    .o(n41));  // ../../rtl/memory/memory.vhd(225)
+    .o(n41));  // ../../rtl/memory/memory.vhd(155)
   bufif1 u49 (MD[3], n43, n39);  // ../../rtl/memory/memory.vhd(39)
-  or u5 (n3, n1, n2);  // ../../rtl/memory/memory.vhd(181)
+  or u5 (n3, n1, n2);  // ../../rtl/memory/memory.vhd(111)
   AL_MUX u50 (
     .i0(D[4]),
     .i1(loader_ram_do[4]),
     .sel(loader_act),
-    .o(n42));  // ../../rtl/memory/memory.vhd(225)
+    .o(n42));  // ../../rtl/memory/memory.vhd(155)
   bufif1 u51 (MD[4], n42, n39);  // ../../rtl/memory/memory.vhd(39)
   AL_MUX u52 (
     .i0(D[3]),
     .i1(loader_ram_do[3]),
     .sel(loader_act),
-    .o(n43));  // ../../rtl/memory/memory.vhd(225)
+    .o(n43));  // ../../rtl/memory/memory.vhd(155)
   bufif1 u53 (MD[5], n41, n39);  // ../../rtl/memory/memory.vhd(39)
   AL_MUX u54 (
     .i0(D[2]),
     .i1(loader_ram_do[2]),
     .sel(loader_act),
-    .o(n44));  // ../../rtl/memory/memory.vhd(225)
-  buf u55 (DO[7], buf_md[7]);  // ../../rtl/memory/memory.vhd(204)
+    .o(n44));  // ../../rtl/memory/memory.vhd(155)
+  buf u55 (DO[7], buf_md[7]);  // ../../rtl/memory/memory.vhd(134)
   bufif1 u56 (MD[6], n40, n39);  // ../../rtl/memory/memory.vhd(39)
   AL_MUX u57 (
     .i0(D[1]),
     .i1(loader_ram_do[1]),
     .sel(loader_act),
-    .o(n45));  // ../../rtl/memory/memory.vhd(225)
-  buf u58 (DO[6], buf_md[6]);  // ../../rtl/memory/memory.vhd(204)
+    .o(n45));  // ../../rtl/memory/memory.vhd(155)
+  buf u58 (DO[6], buf_md[6]);  // ../../rtl/memory/memory.vhd(134)
   bufif1 u59 (MD[7], n38, n39);  // ../../rtl/memory/memory.vhd(39)
-  and u6 (n4, n0, n3);  // ../../rtl/memory/memory.vhd(181)
+  and u6 (n4, n0, n3);  // ../../rtl/memory/memory.vhd(111)
   AL_MUX u60 (
     .i0(D[0]),
     .i1(loader_ram_do[0]),
     .sel(loader_act),
-    .o(n46));  // ../../rtl/memory/memory.vhd(225)
-  buf u61 (DO[5], buf_md[5]);  // ../../rtl/memory/memory.vhd(204)
-  buf u62 (mux[1], A[15]);  // ../../rtl/memory/memory.vhd(266)
-  not u63 (n47, is_buf_wr);  // ../../rtl/memory/memory.vhd(230)
-  buf u64 (DO[4], buf_md[4]);  // ../../rtl/memory/memory.vhd(204)
-  and u65 (n49, n4, vbus_ack);  // ../../rtl/memory/memory.vhd(240)
-  buf u66 (DO[3], buf_md[3]);  // ../../rtl/memory/memory.vhd(204)
-  not u67 (n50, n49);  // ../../rtl/memory/memory.vhd(245)
+    .o(n46));  // ../../rtl/memory/memory.vhd(155)
+  buf u61 (DO[5], buf_md[5]);  // ../../rtl/memory/memory.vhd(134)
+  buf u62 (mux[1], A[15]);  // ../../rtl/memory/memory.vhd(196)
+  not u63 (n47, is_buf_wr);  // ../../rtl/memory/memory.vhd(160)
+  buf u64 (DO[4], buf_md[4]);  // ../../rtl/memory/memory.vhd(134)
+  and u65 (n49, n4, vbus_ack);  // ../../rtl/memory/memory.vhd(170)
+  buf u66 (DO[3], buf_md[3]);  // ../../rtl/memory/memory.vhd(134)
+  not u67 (n50, n49);  // ../../rtl/memory/memory.vhd(175)
   AL_MUX u68 (
     .i0(n24),
     .i1(vid_rd),
     .sel(n49),
-    .o(n51));  // ../../rtl/memory/memory.vhd(245)
+    .o(n51));  // ../../rtl/memory/memory.vhd(175)
   AL_MUX u69 (
     .i0(vbus_mode),
     .i1(n50),
     .sel(n48),
-    .o(n52));  // ../../rtl/memory/memory.vhd(247)
-  not u7 (vbus_req, n4);  // ../../rtl/memory/memory.vhd(181)
+    .o(n52));  // ../../rtl/memory/memory.vhd(177)
+  not u7 (vbus_req, n4);  // ../../rtl/memory/memory.vhd(111)
   AL_MUX u70 (
     .i0(vid_rd),
     .i1(n51),
     .sel(n48),
-    .o(n53));  // ../../rtl/memory/memory.vhd(247)
+    .o(n53));  // ../../rtl/memory/memory.vhd(177)
   AL_MUX u71 (
     .i0(vbus_ack),
     .i1(vbus_req),
     .sel(n48),
-    .o(n54));  // ../../rtl/memory/memory.vhd(247)
-  buf u72 (DO[2], buf_md[2]);  // ../../rtl/memory/memory.vhd(204)
-  not u73 (n56, WOROM);  // ../../rtl/memory/memory.vhd(255)
-  and u74 (n57, n0, n55);  // ../../rtl/memory/memory.vhd(255)
-  and u75 (is_rom, n57, n56);  // ../../rtl/memory/memory.vhd(255)
-  buf u76 (DO[1], buf_md[1]);  // ../../rtl/memory/memory.vhd(204)
-  not u77 (n58, is_rom);  // ../../rtl/memory/memory.vhd(256)
-  and u78 (is_ram, n0, n58);  // ../../rtl/memory/memory.vhd(256)
-  not u79 (rom_page[1], TRDOS);  // ../../rtl/memory/memory.vhd(262)
-  not u8 (n48, CLKX);  // ../../rtl/memory/memory.vhd(182)
-  buf u80 (rom_page[0], ROM_BANK);  // ../../rtl/memory/memory.vhd(262)
-  or u81 (n59, is_ram, is_rom);  // ../../rtl/memory/memory.vhd(264)
-  buf u82 (VID_DO[7], MD[7]);  // ../../rtl/memory/memory.vhd(206)
-  and u83 (n60, n59, n2);  // ../../rtl/memory/memory.vhd(264)
-  not u84 (N_OE, n60);  // ../../rtl/memory/memory.vhd(264)
-  buf u85 (VID_DO[0], MD[0]);  // ../../rtl/memory/memory.vhd(206)
+    .o(n54));  // ../../rtl/memory/memory.vhd(177)
+  buf u72 (DO[2], buf_md[2]);  // ../../rtl/memory/memory.vhd(134)
+  not u73 (n56, WOROM);  // ../../rtl/memory/memory.vhd(185)
+  and u74 (n57, n0, n55);  // ../../rtl/memory/memory.vhd(185)
+  and u75 (is_rom, n57, n56);  // ../../rtl/memory/memory.vhd(185)
+  buf u76 (DO[1], buf_md[1]);  // ../../rtl/memory/memory.vhd(134)
+  not u77 (n58, is_rom);  // ../../rtl/memory/memory.vhd(186)
+  and u78 (is_ram, n0, n58);  // ../../rtl/memory/memory.vhd(186)
+  not u79 (rom_page[1], TRDOS);  // ../../rtl/memory/memory.vhd(192)
+  not u8 (n48, CLKX);  // ../../rtl/memory/memory.vhd(112)
+  buf u80 (rom_page[0], ROM_BANK);  // ../../rtl/memory/memory.vhd(192)
+  or u81 (n59, is_ram, is_rom);  // ../../rtl/memory/memory.vhd(194)
+  buf u82 (VID_DO[7], MD[7]);  // ../../rtl/memory/memory.vhd(136)
+  and u83 (n60, n59, n2);  // ../../rtl/memory/memory.vhd(194)
+  not u84 (N_OE, n60);  // ../../rtl/memory/memory.vhd(194)
+  buf u85 (VID_DO[0], MD[0]);  // ../../rtl/memory/memory.vhd(136)
   bufif1 u86 (MD[1], n45, n39);  // ../../rtl/memory/memory.vhd(39)
-  buf u87 (VID_DO[6], MD[6]);  // ../../rtl/memory/memory.vhd(206)
+  buf u87 (VID_DO[6], MD[6]);  // ../../rtl/memory/memory.vhd(136)
   bufif1 u88 (MD[0], n46, n39);  // ../../rtl/memory/memory.vhd(39)
-  buf u89 (VID_DO[5], MD[5]);  // ../../rtl/memory/memory.vhd(206)
-  not u9 (n5, CLK_CPU);  // ../../rtl/memory/memory.vhd(182)
-  not u90 (n64, A[0]);  // ../../rtl/memory/memory.vhd(302)
-  buf u91 (VID_DO[4], MD[4]);  // ../../rtl/memory/memory.vhd(206)
-  and u92 (n65, n64, n33);  // ../../rtl/memory/memory.vhd(302)
-  or u93 (n66, n0, n65);  // ../../rtl/memory/memory.vhd(302)
-  not u94 (n67, n66);  // ../../rtl/memory/memory.vhd(306)
-  buf u95 (VID_DO[3], MD[3]);  // ../../rtl/memory/memory.vhd(206)
-  buf u96 (VID_DO[2], MD[2]);  // ../../rtl/memory/memory.vhd(206)
-  buf u97 (VID_DO[1], MD[1]);  // ../../rtl/memory/memory.vhd(206)
-  or u98 (page_cont, n65, n68);  // ../../rtl/memory/memory.vhd(310)
-  buf u99 (mux[0], A[14]);  // ../../rtl/memory/memory.vhd(266)
+  buf u89 (VID_DO[5], MD[5]);  // ../../rtl/memory/memory.vhd(136)
+  not u9 (n5, CLK_CPU);  // ../../rtl/memory/memory.vhd(112)
+  not u90 (n64, A[0]);  // ../../rtl/memory/memory.vhd(232)
+  buf u91 (VID_DO[4], MD[4]);  // ../../rtl/memory/memory.vhd(136)
+  and u92 (n65, n64, n33);  // ../../rtl/memory/memory.vhd(232)
+  or u93 (n66, n0, n65);  // ../../rtl/memory/memory.vhd(232)
+  not u94 (n67, n66);  // ../../rtl/memory/memory.vhd(236)
+  buf u95 (VID_DO[3], MD[3]);  // ../../rtl/memory/memory.vhd(136)
+  buf u96 (VID_DO[2], MD[2]);  // ../../rtl/memory/memory.vhd(136)
+  buf u97 (VID_DO[1], MD[1]);  // ../../rtl/memory/memory.vhd(136)
+  or u98 (page_cont, n65, n68);  // ../../rtl/memory/memory.vhd(240)
+  buf u99 (mux[0], A[14]);  // ../../rtl/memory/memory.vhd(196)
   AL_DFF vbus_ack_reg (
     .clk(CLK2X),
     .d(n54),
     .reset(1'b0),
     .set(1'b0),
-    .q(vbus_ack));  // ../../rtl/memory/memory.vhd(248)
+    .q(vbus_ack));  // ../../rtl/memory/memory.vhd(178)
   AL_DFF vbus_mode_reg (
     .clk(CLK2X),
     .d(n52),
     .reset(1'b0),
     .set(1'b0),
-    .q(vbus_mode));  // ../../rtl/memory/memory.vhd(248)
+    .q(vbus_mode));  // ../../rtl/memory/memory.vhd(178)
   AL_DFF vid_rd_reg (
     .clk(CLK2X),
     .d(n53),
     .reset(1'b0),
     .set(1'b0),
-    .q(vid_rd));  // ../../rtl/memory/memory.vhd(248)
+    .q(vid_rd));  // ../../rtl/memory/memory.vhd(178)
 
 endmodule 
 
