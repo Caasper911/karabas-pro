@@ -4,6 +4,9 @@ use IEEE.numeric_std.ALL;
 use IEEE.std_logic_unsigned.all;
 
 entity overlay is
+	generic (
+			enable_osd_icons : boolean := true
+	);
 	port (
 		CLK		: in std_logic;
 		CLK2 		: in std_logic;
@@ -19,7 +22,6 @@ entity overlay is
 		STATUS_SD : in std_logic := '0'; -- SD card r/w status
 		STATUS_CF : in std_logic := '0'; -- CF card r/w status
 		STATUS_FD : in std_logic := '0'; -- FDD r/w status
-		OSD_ICONS : in std_logic := '0'; -- enable OSD icons
 		
 		OSD_OVERLAY 	: in std_logic := '0'; -- full overlay osd
 		OSD_POPUP 		: in std_logic := '0'; -- popup osd
@@ -100,6 +102,7 @@ begin
     );
 
 	 -- иконки
+	 G_ICONS: if enable_osd_icons generate
 	 U_ICONS: entity work.icons
     port map (
 		CLK		=> CLK,
@@ -114,8 +117,13 @@ begin
 		STATUS_SD => STATUS_SD,
 		STATUS_CF => STATUS_CF,
 		STATUS_FD => STATUS_FD,
-		OSD_ICONS => OSD_ICONS
+		OSD_ICONS => '1'
     );
+	 end generate G_ICONS;
+	 
+	 G_NOICONS: if not(enable_osd_icons) generate 
+		rgb <= RGB_I;
+	 end generate G_NOICONS;
 
 	 -- видеопамять OSD
     U_VRAM: screen1 

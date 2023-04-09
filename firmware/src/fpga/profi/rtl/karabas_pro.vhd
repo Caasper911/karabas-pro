@@ -34,7 +34,9 @@ entity karabas_pro is
 		enable_zxuno_uart2 : boolean := false; -- uart 2 (enabled for ep4ce10)
 		enable_saa1099 	 : boolean := false; -- saa1099 (enabled for ep4ce10)
 		enable_osd_overlay : boolean := true;  -- osd overlay (enabled by default)
-		enable_2port_vram  : boolean := false -- 2port vram (enabled for ep4ce10)
+		enable_2port_vram  : boolean := false; -- 2port vram (enabled for ep4ce10)
+		enable_timex 		 : boolean := true; -- enable timex hires/hicolor modes via port #ff
+		enable_osd_icons 	 : boolean := false -- osd icons on border
 	);
 port (
 	-- Clock (50MHz)
@@ -211,6 +213,8 @@ signal vid_vcnt 		: std_logic_vector(8 downto 0);
 signal vid_ispaper   : std_logic;
 signal vid_scandoubler_enable : std_logic := '1';
 signal blink 			: std_logic;
+signal timexcfg_reg 	: std_logic_vector(5 downto 0);
+signal is_port_ff 	: std_logic := '0';
 
 -- OSD overlay
 signal osd_overlay 	: std_logic := '0';
@@ -256,6 +260,7 @@ signal cs_rtc_as 		: std_logic := '0';
 signal cs_008b			: std_logic := '0';
 signal cs_018b			: std_logic := '0';
 signal cs_028b			: std_logic := '0';
+signal cs_xxff 		: std_logic := '0';
 
 -- Profi HDD ports
 signal hdd_profi_ebl_n	:std_logic;
@@ -672,6 +677,7 @@ port map (
 	ENA 				=> clk_div4, 	-- 7 / 6
 	RESET 			=> reset,	
 	BORDER 			=> port_xxfe_reg(7 downto 0),
+	TIMEXCFG 		=> timexcfg_reg,
 	DI 				=> vid_do_bus,
 	TURBO 			=> turbo_mode,	-- turbo signal for int length
 	INTA 				=> cpu_inta_n,
@@ -704,6 +710,9 @@ port map (
 
 -- osd overlay
 U8: entity work.overlay
+generic map (
+	enable_osd_icons => enable_osd_icons
+)
 port map (
 	CLK 				=> clk_bus,
 	CLK2 				=> clk_div2,
@@ -720,7 +729,6 @@ port map (
 	STATUS_FD		=> not(fdd_cs_n) and (not(cpu_rd_n) or not(cpu_wr_n)),
 	STATUS_SD 		=> zc_spi_start and zc_wr_en,
 	STATUS_CF 		=> hdd_active,
-	OSD_ICONS 		=> '1',
 	
 	-- osd overlay
 	OSD_OVERLAY		=> osd_overlay,
@@ -1323,6 +1331,7 @@ cs_fffd <= '1' when cpu_iorq_n = '0' and cpu_m1_n = '1' and cpu_a_bus = X"FFFD" 
 cs_dffd <= '1' when cpu_iorq_n = '0' and cpu_m1_n = '1' and cpu_a_bus = X"DFFD" and fd_port = '1' and lock_dffd = '0' else '0';
 cs_7ffd <= '1' when cpu_iorq_n = '0' and cpu_m1_n = '1' and cpu_a_bus = X"7FFD" and fd_port = '1' else '0';
 cs_xxfd <= '1' when cpu_iorq_n = '0' and cpu_m1_n = '1' and cpu_a_bus(15) = '0' and cpu_a_bus(1) = '0' else '0';
+cs_xxff <= '1' when cpu_iorq_n = '0' and cpu_m1_n = '1' and cpu_a_bus(7 downto 0) = x"FF" and dos_act='0' and cpm='0' and ds80='0' else '0';
 
 -- Регистры SPI-FLASH
 cs_xxC7 <= '1' when cpu_iorq_n = '0' and cpu_a_bus (7 downto 0) = X"C7" and cpm='1' and rom14='1' and ds80='1' else '0';
@@ -1389,6 +1398,8 @@ begin
 		port_008b_reg <= (others => '0');
 		port_018b_reg <= (others => '0');
 		port_028b_reg <= (others => '0');
+		timexcfg_reg <= (others => '0');
+		is_port_ff <= '0';
 		dos_act <= '1';
 		kb_turbo_old <= "00";
 	elsif clk_bus'event and clk_bus = '1' then
@@ -1458,6 +1469,12 @@ begin
 			elsif kb_turbo /= kb_turbo_old then
 				port_028b_reg (6 downto 5) <= kb_turbo (1 downto 0);
 				kb_turbo_old <= kb_turbo;
+			end if;
+
+			-- #FF
+			if (cs_xxff = '1' and cpu_wr_n='0' and enable_timex) then 
+				timexcfg_reg(5 downto 0) <= cpu_do_bus(5 downto 0);
+				is_port_ff <= '1';
 			end if;
 			
 			-- TR-DOS FLAG
@@ -1610,8 +1627,9 @@ begin
 		when x"13" => cpu_di_bus <= port_008b_reg;
 		when x"14" => cpu_di_bus <= port_018b_reg;
 		when x"15" => cpu_di_bus <= port_028b_reg;
-		when x"16" => cpu_di_bus <= vid_attr;
-		when x"17" => cpu_di_bus <= cpld_do;
+		when x"16" => cpu_di_bus <= "00" & timexcfg_reg;
+		when x"17" => cpu_di_bus <= vid_attr;
+		when x"18" => cpu_di_bus <= cpld_do;
 		when others => cpu_di_bus <= (others => '1');
 	end case;
 end process;
@@ -1639,8 +1657,9 @@ selector <=
 	x"13" when (cs_008b = '1' and cpu_rd_n = '0') else										-- port #008B
 	x"14" when (cs_018b = '1' and cpu_rd_n = '0') else										-- port #018B
 	x"15" when (cs_028b = '1' and cpu_rd_n = '0') else										-- port #028B
-	x"16" when (vid_pff_cs = '1' and cpu_iorq_n = '0' and cpu_rd_n = '0' and cpu_a_bus( 7 downto 0) = X"FF") and dos_act='0' and cpm = '0' and ds80 = '0' else -- Port FF select
-	x"17" when cpu_iorq_n = '0' and cpu_rd_n = '0' and cpu_m1_n = '1' else -- cpld 
+	x"16" when (enable_timex and cs_xxff = '1' and cpu_rd_n = '0' and is_port_ff = '1' and dos_act='0' and cpm = '0' and ds80 = '0') else  -- #FF (timex config)
+	x"17" when (vid_pff_cs = '1' and cpu_iorq_n = '0' and cpu_rd_n = '0' and cpu_a_bus( 7 downto 0) = X"FF") and dos_act='0' and cpm = '0' and ds80 = '0' else -- Port FF select
+	x"18" when cpu_iorq_n = '0' and cpu_rd_n = '0' and cpu_m1_n = '1' else -- cpld 
 	(others => '1');
 	
 end rtl;

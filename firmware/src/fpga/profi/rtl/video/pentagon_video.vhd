@@ -16,6 +16,7 @@ entity pentagon_video is
 		CLK		: in std_logic; -- 14 MHz
 		ENA		: in std_logic; -- 7 MHz 
 		BORDER	: in std_logic_vector(2 downto 0);	-- bordr color (port #xxFE)
+		TIMEXCFG : in std_logic_vector(5 downto 0);  -- порт Timex (#xxFF)
 		DI			: in std_logic_vector(7 downto 0);	-- video data from memory
 		TURBO 	: in std_logic_vector := "00"; -- 01 = turbo 2x mode, 10 - turbo 4x mode, 11 - turbo 8x mode, 00 = normal mode
 		INTA		: in std_logic := '0'; -- int request for turbo mode
@@ -70,8 +71,18 @@ architecture rtl of pentagon_video is
 	signal VIDEO_I 	: std_logic;	
 		
 	signal int_sig : std_logic;
+	
+	signal timex_page : std_logic;
+	signal timex_hicolor : std_logic;
+	signal timex_hires : std_logic;
+	signal timex_pallette : std_logic_vector(2 downto 0);
 		
 begin
+
+	timex_page <= TIMEXCFG(0);
+	timex_hicolor <= TIMEXCFG(1);
+	timex_hires <= TIMEXCFG(2);
+	timex_pallette <= TIMEXCFG(5 downto 3);
 
 	-- sync, counters
 	process( CLK2X, CLK, ENA, chr_col_cnt, hor_cnt, chr_row_cnt, ver_cnt, TURBO, INTA)
@@ -182,11 +193,26 @@ begin
 	end process;
 
 	-- r/g/b/i
-	process( CLK2X, CLK, ENA, paper_r, shift_r, attr_r, invert, blank_r, BORDER )
+	process( CLK2X, CLK, ENA, paper_r, shift_r, attr_r, invert, blank_r, BORDER, timex_hires, timex_pallette )
 	begin
 		if CLK2X'event and CLK2X = '1' then
-		if CLK = '1' and ENA = '1' then
+		if CLK = '1' then
 			if paper_r = '0' then -- paper
+				if (timex_hires = '1') then
+					-- timex hires RGB
+					if (shift_hr_r(15) = '1') then --fg pixel
+						VIDEO_R <= timex_pallette(2);
+						VIDEO_G <= timex_pallette(1);
+						VIDEO_B <= timex_pallette(0); 
+						VIDEO_I <= '0';
+					else -- bg pixel
+						VIDEO_R <= not timex_pallette(2);
+						VIDEO_G <= not timex_pallette(1);
+						VIDEO_B <= not timex_pallette(0); 
+						VIDEO_I <= '0';
+					end if;
+				
+				elsif (ENA = '1') then 
 					-- standard RGB
 					if( shift_r(7) xor ( attr_r(7) and invert(4) ) ) = '1' then -- fg pixel
 						VIDEO_B <= attr_r(0);
@@ -198,6 +224,7 @@ begin
 						VIDEO_G <= attr_r(5);
 					end if;
 					VIDEO_I <= attr_r(6);
+				end if;
 			else -- not paper
 				if blank_r = '0' then
 					-- blank
@@ -205,7 +232,13 @@ begin
 					VIDEO_R <= '0';
 					VIDEO_G <= '0';
 					VIDEO_I <= '0';
-				else -- std border
+				elsif timex_hires = '1' then -- hires border
+					-- timex hires RGB
+					VIDEO_B <= not timex_pallette(2);
+					VIDEO_R <= not timex_pallette(1);
+					VIDEO_G <= not timex_pallette(0);
+					VIDEO_I <= '0';
+				elsif (ENA = '1') then -- std border
 					-- standard RGB
 					VIDEO_B <= BORDER(0);
 					VIDEO_R <= BORDER(1);
@@ -217,48 +250,41 @@ begin
 		end if;
 	end process;
 
-	-- paper, blank
+	-- paper, blank, bitmap shift registers
 	process( CLK2X, CLK, ENA, chr_col_cnt, hor_cnt, ver_cnt, shift_hr_r, attr, bitmap, paper, shift_r )
 	begin
 		if CLK2X'event and CLK2X = '1' then
 			if CLK = '1' then		
+				-- timex hires shift register
+				if chr_col_cnt = 7 and ENA = '1' then 
+					shift_hr_r <= bitmap & attr;
+				else 
+					shift_hr_r(15 downto 1) <= shift_hr_r(14 downto 0);
+					shift_hr_r(0) <= '0';
+				end if;
+
+				-- standard shift register 
 				if ENA = '1' then
 					if chr_col_cnt = 7 then
-						-- PENTAGON blank
-						if SCREEN_MODE = "00" and ((hor_cnt(5 downto 0) > 38 and hor_cnt(5 downto 0) < 48) or ((ver_cnt(5 downto 1) = 15 and MODE60 = '0') or (ver_cnt(5 downto 1) = 14 and MODE60 = '1'))) then	-- 15 = for 320 lines, 13 = for 264 lines
-							blank_r <= '0';
-						-- CLASSIC blank
-						elsif SCREEN_MODE = "01" and (hor_cnt(5 downto 2) = 10 or hor_cnt(5 downto 2) = 11 or (ver_cnt = 31 and MODE60 = '0') or (ver_cnt = 30 and MODE60 = '1')) then
+						attr_r <= attr;
+						shift_r <= bitmap;
+
+						if ((hor_cnt(5 downto 0) > 38 and hor_cnt(5 downto 0) < 48) or ver_cnt(5 downto 1) = 15) then
 							blank_r <= '0';
 						else 
 							blank_r <= '1';
-						end if;							
+						end if;
+						
 						paper_r <= paper;
+					else
+						shift_r(7 downto 1) <= shift_r(6 downto 0);
+						shift_r(0) <= '0';
 					end if;
+
 				end if;
 			end if;
 		end if;
 	end process;	
-	
-	-- bitmap shift registers
-	process( CLK2X, CLK, ENA, chr_col_cnt, hor_cnt, ver_cnt, shift_hr_r, attr, bitmap, paper, shift_r )
-	begin
-		if CLK2X'event and CLK2X = '1' then
-
-			if CLK = '1' then
-					-- standard shift register 
-					if ENA = '1' then
-						if chr_col_cnt = 7 then
-							attr_r <= attr;
-							shift_r <= bitmap;
-						else
-							shift_r(7 downto 1) <= shift_r(6 downto 0);
-							shift_r(0) <= '0';
-						end if;
-					end if;
-			end if;
-		end if;
-	end process;
 	
 	-- 2 port vram
 	G_2PORT_VRAM: if enable_2port_vram generate
@@ -306,9 +332,11 @@ begin
 		
 		A <= 
 			-- data address
-			std_logic_vector( '0' & ver_cnt(4 downto 3) & chr_row_cnt & ver_cnt(2 downto 0) & hor_cnt(4 downto 0)) when VBUS_MODE = '1' and VID_RD = '0' else 
+			std_logic_vector( timex_page & ver_cnt(4 downto 3) & chr_row_cnt & ver_cnt(2 downto 0) & hor_cnt(4 downto 0)) when VBUS_MODE = '1' and VID_RD = '0' else 
+			-- timex attribute address
+			std_logic_vector( '1' & ver_cnt(4 downto 3) & chr_row_cnt & ver_cnt(2 downto 0) & hor_cnt(4 downto 0) ) when VBUS_MODE = '1' and VID_RD = '1' and timex_hicolor = '1' else 
 			-- standard attribute address
-			std_logic_vector( '0' & "110" & ver_cnt(4 downto 0) & hor_cnt(4 downto 0));
+			std_logic_vector( timex_page & "110" & ver_cnt(4 downto 0) & hor_cnt(4 downto 0));
 	
 	end generate G_SRAM_VRAM;
 	

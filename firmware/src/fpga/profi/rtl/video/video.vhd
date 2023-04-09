@@ -18,6 +18,7 @@ entity video is
 		RESET 	: in std_logic := '0';
 
 		BORDER	: in std_logic_vector(7 downto 0);	-- bordr color (port #xxFE)
+		TIMEXCFG : in std_logic_vector(5 downto 0);  -- порт Timex (#xxFF)
 		DI			: in std_logic_vector(7 downto 0);	-- video data from memory
 		TURBO 	: in std_logic_vector := "00"; -- 01 = turbo 2x mode, 10 - turbo 4x mode, 11 - turbo 8x mode, 00 = normal mode
 		INTA		: in std_logic := '0'; -- int request for turbo mode
@@ -119,6 +120,7 @@ begin
 		CLK2x => CLK2x, -- 28
 		ENA => ENA, -- 7
 		BORDER => BORDER(2 downto 0),
+		TIMEXCFG => TIMEXCFG,
 		DI => DI,
 		TURBO => TURBO,
 		INTA => INTA,
