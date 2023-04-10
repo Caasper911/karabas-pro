@@ -31,12 +31,12 @@ use IEEE.numeric_std.all;
 entity karabas_pro is
 	generic (
 		enable_zxuno_uart  : boolean := true;  -- uart 1 (enabled by default)
-		enable_zxuno_uart2 : boolean := false; -- uart 2 (enabled for ep4ce10)
-		enable_saa1099 	 : boolean := false; -- saa1099 (enabled for ep4ce10)
+		enable_zxuno_uart2 : boolean := true; -- uart 2 (enabled for ep4ce10)
+		enable_saa1099 	 : boolean := true; -- saa1099 (enabled for ep4ce10)
 		enable_osd_overlay : boolean := true;  -- osd overlay (enabled by default)
 		enable_2port_vram  : boolean := false; -- 2port vram (enabled for ep4ce10)
 		enable_timex 		 : boolean := true; -- enable timex hires/hicolor modes via port #ff
-		enable_osd_icons 	 : boolean := false -- osd icons on border
+		enable_osd_icons 	 : boolean := true -- osd icons on border
 	);
 port (
 	-- Clock (50MHz)
@@ -709,6 +709,7 @@ port map (
 );
 
 -- osd overlay
+G_OVERLAY: if enable_osd_overlay generate
 U8: entity work.overlay
 generic map (
 	enable_osd_icons => enable_osd_icons
@@ -735,6 +736,11 @@ port map (
 	OSD_POPUP 		=> osd_popup,
 	OSD_COMMAND 	=> osd_command
 );
+end generate G_OVERLAY;
+
+G_NOOVERLAY: if not(enable_osd_overlay) generate
+	vid_rgb_osd <= vid_rgb;
+end generate G_NOOVERLAY;
 
 -- Scandoubler	
 U9: entity work.vga_pal 
