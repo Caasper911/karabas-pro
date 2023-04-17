@@ -61,10 +61,11 @@ module video_sync (
 // ZX controls
 	input wire y_offs_wr,
 	output wire int_start,
-
-    output wire osd_hcnt,
-    output wire osd_vcnt,
-    output wire osd_paper
+	
+	// osd
+	output wire [9:0] osd_hcnt,
+	output wire [8:0] osd_vcnt,
+	output wire       osd_paper
 
 );
 
@@ -111,10 +112,6 @@ module video_sync (
 	// horizontal VGA (14MHz)
 	always @(posedge clk) if (f1)
 		cnt_out <= vga_pix_start && c3 ? 9'b0 : cnt_out + 9'b1;
-
-    assign osd_hcnt = hcount;
-    assign osd_vcnt = vcount;
-    assign osd_paper = hpix && vpix;
 
 	// column address for DRAM
 	always @(posedge clk)
@@ -221,7 +218,10 @@ module video_sync (
 	assign ts_start = c3 && ts_start_coarse;
 	assign int_start = (hcount == {hint_beg, 1'b0}) && (vcount == vint_beg) && c0;
 
-
+   assign osd_hcnt = hcount;
+   assign osd_vcnt = vcount;
+   assign osd_paper = hpix && vpix;
+	
 	reg vga_vblank;
 	always @(posedge clk) if (line_start_s)		// fix me - bydlocode !!!
 		vga_vblank <= tv_vblank;

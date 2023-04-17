@@ -1,3 +1,4 @@
+
 // This module fetches video data from DRAM
 
 module video_fetch (

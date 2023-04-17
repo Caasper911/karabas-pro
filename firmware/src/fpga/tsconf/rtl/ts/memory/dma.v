@@ -24,10 +24,10 @@ module dma (
 	output wire [20:0] dram_addr,
 	input  wire [15:0] dram_rddata,
 	output wire [15:0] dram_wrdata,
-	output wire	dram_req,
-	output reg	dma_z80_lp,
-	output wire	dram_rnw,
-	input  wire	dram_next,
+	output wire		dram_req,
+	output reg		 dma_z80_lp,
+	output wire		dram_rnw,
+	input  wire		dram_next,
 
 // SPI interface
 	input  wire  [7:0] spi_rddata,
@@ -47,15 +47,9 @@ module dma (
 	output wire		cram_we,
 
 // SFILE interface
-	output wire		sfile_we,
-	//---------------------
-	output wire [3:0] TST
+	output wire		sfile_we
 );
-	
-   assign TST[0] = dma_act;
-	assign TST[1] = dma_len; 
-	assign TST[2] = b_len[7];
-	assign TST[3] = b_ctr[7]; 
+
 // mode:
 //  0 - device to RAM (read from device)
 //  1 - RAM to device (write to device)
@@ -70,9 +64,9 @@ module dma (
 	wire dma_daddrl = dma_wr[3];
 	wire dma_daddrh = dma_wr[4];
 	wire dma_daddrx = dma_wr[5];
-	wire dma_len	 = dma_wr[6];
+	wire dma_len	= dma_wr[6];
 	wire dma_launch = dma_wr[7];
-	wire dma_num	 = dma_wr[8];
+	wire dma_num	= dma_wr[8];
 
 // DRAM
 	assign dram_addr = state_rd ? ((!dv_blt || !phase_blt) ? s_addr : d_addr) : d_addr;
@@ -110,14 +104,14 @@ module dma (
 	
 	// blitter
 	wire [15:0] blt_rddata = {blt_data_h, blt_data_l};
-	wire [7:0]  blt_data_h = dma_asz ? blt_data32 : {blt_data3, blt_data2};
-	wire [7:0]  blt_data_l = dma_asz ? blt_data10 : {blt_data1, blt_data0};
-	wire [7:0]  blt_data32 = |data[15:8]  ? data[15:8]  : dram_rddata[15:8];
-	wire [7:0]  blt_data10 = |data[7:0]   ? data[7:0]   : dram_rddata[7:0];
-	wire [3:0]  blt_data3  = |data[15:12] ? data[15:12] : dram_rddata[15:12];
-	wire [3:0]  blt_data2  = |data[11:8]  ? data[11:8]  : dram_rddata[11:8];
-	wire [3:0]  blt_data1  = |data[7:4]   ? data[7:4]   : dram_rddata[7:4];
-	wire [3:0]  blt_data0  = |data[3:0]   ? data[3:0]   : dram_rddata[3:0];
+	wire [7:0] blt_data_h = dma_asz ? blt_data32 : {blt_data3, blt_data2};
+	wire [7:0] blt_data_l = dma_asz ? blt_data10 : {blt_data1, blt_data0};
+	wire [7:0] blt_data32 = |data[15:8] ? data[15:8] : dram_rddata[15:8];
+	wire [7:0] blt_data10 = |data[7:0] ? data[7:0] : dram_rddata[7:0];
+	wire [3:0] blt_data3 = |data[15:12] ? data[15:12] : dram_rddata[15:12];
+	wire [3:0] blt_data2 = |data[11:8] ? data[11:8] : dram_rddata[11:8];
+	wire [3:0] blt_data1 = |data[7:4] ? data[7:4] : dram_rddata[7:4];
+	wire [3:0] blt_data0 = |data[3:0] ? data[3:0] : dram_rddata[3:0];
 
 // data aquiring
 	always @(posedge clk)

@@ -250,8 +250,6 @@ set_global_assignment -name VERILOG_FILE ../../rtl/ts/memory/dma.v
 set_global_assignment -name VERILOG_FILE ../../rtl/ts/memory/arbiter.v
 set_global_assignment -name VERILOG_FILE ../../rtl/ts/common/spi.v
 set_global_assignment -name VERILOG_FILE ../../rtl/ts/pll/pll.v
-set_global_assignment -name VERILOG_FILE ../../rtl/ts/pll/clock_2.v
-set_global_assignment -name VHDL_FILE ../../rtl/ts/pll/clock_1.vhd
 set_global_assignment -name VERILOG_FILE ../../rtl/ts/pll/clock.v
 set_global_assignment -name VERILOG_FILE ../../rtl/ts/sound/sound.v
 set_global_assignment -name VERILOG_FILE ../../rtl/ts/video/video_ts_render.v

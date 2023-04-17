@@ -253,6 +253,8 @@ signal cpu_int_n_TS : std_logic;
 signal im2vect      : std_logic_vector(7 downto 0);
 signal turbo        : std_logic_vector(1 downto 0);
 
+signal rstrom       : std_logic_vector(1 downto 0) := "00";
+
 -- zsignal
 signal cpu_stall    : std_logic; -- zmem -> zclock
 signal cpu_req      : std_logic; -- zmem -> arbiter
@@ -261,17 +263,16 @@ signal cpu_next     : std_logic; -- arbiter -> zmem
 signal cpu_current  : std_logic; -- arbiter -> zmem
 signal cpu_strobe   : std_logic; -- arbiter -> zmem
 signal cpu_latch    : std_logic; -- arbiter -> zmem
-signal cpu_addr     : std_logic_vector(23 downto 0);
-signal cpu_addr_20  : std_logic_vector(20 downto 0);
-signal cpu_addr_ext : std_logic_vector(2 downto 0);
+signal cpu_addr     : std_logic_vector(20 downto 0);
 signal csvrom       : std_logic;
 signal curr_cpu     : std_logic;
 
 signal cacheconf    : std_logic_vector(3 downto 0);
+signal cache_en     : std_logic;
 
 signal req          : std_logic;
 signal rnw          : std_logic;
-signal dram_addr    : std_logic_vector(23 downto 0);
+signal dram_addr    : std_logic_vector(20 downto 0);
 signal dram_bsel    : std_logic_vector(1 downto 0);
 signal dram_rddata  : std_logic_vector(15 downto 0);
 signal dram_wrdata  : std_logic_vector(15 downto 0);
@@ -304,17 +305,17 @@ signal ay_clk       : std_logic;
 signal zclk         : std_logic;
 signal zpos         : std_logic;
 signal zneg         : std_logic;
---signal dos_on     : std_logic;
---signal dos_off    : std_logic;
+signal dos_on     : std_logic;
+signal dos_off    : std_logic;
 signal vdos         : std_logic;
 signal pre_vdos     : std_logic;
 signal vdos_off     : std_logic;
 signal vdos_on      : std_logic;
 signal dos_change   : std_logic;
---signal dos_stall  : std_logic;
+signal dos_stall  : std_logic;
 -- out zsignals
 signal m1           : std_logic;
---signal rfsh       : std_logic;
+signal rfsh       : std_logic;
 signal rd           : std_logic;
 signal wr           : std_logic;
 signal iorq         : std_logic;
@@ -325,18 +326,18 @@ signal iowr         : std_logic;
 signal iorw         : std_logic;
 signal memrd        : std_logic;
 signal memwr        : std_logic;
---signal memrw      : std_logic;
+signal memrw      : std_logic;
 signal opfetch      : std_logic;
 signal intack       : std_logic;
 -- strobre
 signal iorq_s       : std_logic;
---signal mreq_s     : std_logic;
+signal mreq_s     : std_logic;
 signal iord_s       : std_logic;
 signal iowr_s       : std_logic;
 signal iorw_s       : std_logic;
---signal memrd_s    : std_logic;
+signal memrd_s    : std_logic;
 signal memwr_s      : std_logic;
---signal memrw_s    : std_logic;
+signal memrw_s    : std_logic;
 signal opfetch_s    : std_logic;
 -- zports OUT
 signal dout_ports   : std_logic_vector(7 downto 0);
@@ -346,9 +347,9 @@ signal fmaddr       : std_logic_vector(4 downto 0);
 signal sysconf      : std_logic_vector(7 downto 0);
 signal memconf      : std_logic_vector(7 downto 0);
 --signal fddvirt    : std_logic_vector(3 downto 0);
---signal im2v_frm   : std_logic_vector(2 downto 0);
---signal im2v_lin   : std_logic_vector(2 downto 0);
---signal im2v_dma   : std_logic_vector(2 downto 0);
+signal im2v_frm   : std_logic_vector(2 downto 0);
+signal im2v_lin   : std_logic_vector(2 downto 0);
+signal im2v_dma   : std_logic_vector(2 downto 0);
 signal intmask      : std_logic_vector(7 downto 0);
 signal dmaport_wr   : std_logic_vector(8 downto 0);
 --signal mus_in_TS  : std_logic_vector(7 downto 0);
@@ -412,12 +413,9 @@ signal tm_addr      : std_logic_vector(20 downto 0);
 signal tm_req       : std_logic;
 -- Video
 signal tm_next      : std_logic;
-signal vred_ts      : std_logic_vector(4 downto 0);
-signal vgrn_ts      : std_logic_vector(4 downto 0);
-signal vblu_ts      : std_logic_vector(4 downto 0);    
-signal vred_pwm     : std_logic_vector(1 downto 0);
-signal vgrn_pwm     : std_logic_vector(1 downto 0);
-signal vblu_pwm     : std_logic_vector(1 downto 0);    
+signal vred         : std_logic_vector(1 downto 0);
+signal vgrn         : std_logic_vector(1 downto 0);
+signal vblu         : std_logic_vector(1 downto 0);    
 signal hsync_ts     : std_logic;
 signal vsync_ts     : std_logic;
 -- DMA
@@ -476,14 +474,12 @@ component zclock is
 port (
     clk             : in std_logic;
     zclk_out        : out std_logic;
-    c1              : in std_logic;
-    c3              : in std_logic; 
-    c14Mhz          : in std_logic; 
+    c0              : in std_logic;
+    c2              : in std_logic; 
     iorq_s          : in std_logic;
     external_port   : in std_logic;
     zpos            : out std_logic;
     zneg            : out std_logic;
-    dos_stall_o     : out std_logic;
     cpu_stall       : in std_logic;
     ide_stall       : in std_logic;
     dos_on          : in std_logic;
@@ -536,7 +532,6 @@ port (
     dataout         : out std_logic;
     a               : in std_logic_vector(15 downto 0);
     rst             : in std_logic;
-    loader          : in std_logic;
     opfetch         : in std_logic;
     rd              : in std_logic;
     wr              : in std_logic;
@@ -577,15 +572,15 @@ port (
     hint_beg_wr     : out std_logic; 
     vint_begl_wr    : out std_logic;
     vint_begh_wr    : out std_logic;
+	 
     xt_page         : out std_logic_vector(31 downto 0);
     fmaddr          : out std_logic_vector(4 downto 0);
     sysconf         : out std_logic_vector(7 downto 0);
     memconf         : out std_logic_vector(7 downto 0);
-    cacheconf       : out std_logic_vector(3 downto 0);
     fddvirt         : out std_logic_vector(3 downto 0);
-    --im2v_frm      : out std_logic_vector(2 downto 0);
-    --im2v_lin      : out std_logic_vector(2 downto 0);
-    --im2v_dma      : out std_logic_vector(2 downto 0);
+    im2v_frm      : out std_logic_vector(2 downto 0);
+    im2v_lin      : out std_logic_vector(2 downto 0);
+    im2v_dma      : out std_logic_vector(2 downto 0);
     intmask         : out std_logic_vector(7 downto 0);
     dmaport_wr      : out std_logic_vector(8 downto 0);
     dma_act         : in std_logic;
@@ -599,14 +594,14 @@ port (
     beeper_wr       : out std_logic; 
     rstrom          : in std_logic_vector(1 downto 0);
     tape_read       : in std_logic;
---    ide_in        : in std_logic_vector(15 downto 0);
---    ide_out       : out std_logic_vector(15 downto 0);
---    ide_cs0_n     : out std_logic;
---    ide_cs1_n     : out std_logic;
---    ide_req       : out std_logic;
---    ide_stb       : in std_logic;
---    ide_ready     : in std_logic;
---    ide_stall     : out std_logic;
+    ide_in        : in std_logic_vector(15 downto 0);
+    ide_out       : out std_logic_vector(15 downto 0);
+    ide_cs0_n     : out std_logic;
+    ide_cs1_n     : out std_logic;
+    ide_req       : out std_logic;
+    ide_stb       : in std_logic;
+    ide_ready     : in std_logic;
+    ide_stall     : out std_logic;
     keys_in         : in std_logic_vector(4 downto 0);    -- keys (port FE)
     mus_in          : in std_logic_vector(7 downto 0);     -- mouse (xxDF)
     kj_in           : in std_logic_vector(7 downto 0);  -- kempston joy
@@ -623,12 +618,10 @@ port (
     comport_addr    : out std_logic_vector(2 downto 0);
     wait_start_gluclock : out std_logic;             -- begin wait from some ports
     wait_start_comport  : out std_logic;  
+	 wait_rnw 		  : out std_logic;
     wait_write      : out std_logic_vector(7 downto 0);
-    wait_read       : in std_logic_vector(7 downto 0) ;
-    com_data_rx     : in std_logic_vector(7 downto 0);
-    com_status      : in std_logic_vector(7 downto 0);
-    TST             : out std_logic_vector(7 downto 0);
-    lock_conf       : in std_logic);
+    wait_read       : in std_logic_vector(7 downto 0)
+);
 end component;
 
 component zmem is
@@ -651,21 +644,18 @@ port (
     memwr           : in std_logic; 
     memwr_s         : in std_logic; 
     turbo           : in std_logic_vector(1 downto 0);
-    cache_en        : in std_logic_vector(3 downto 0);        
+    cache_en        : in std_logic;        
     memconf         : in std_logic_vector(3 downto 0);
     xt_page         : in std_logic_vector(31 downto 0);
-    xtpage_0        : out std_logic_vector(7 downto 0);
     rompg           : out std_logic_vector(4 downto 0);    -- 32page = 512kB
     csrom           : out std_logic;
     romoe_n         : out std_logic;
     romwe_n         : out std_logic;
-    csvrom          : out std_logic;
+--    csvrom          : out std_logic;
     dos             : out std_logic;             -- DOS
     dos_on          : out std_logic;
     dos_off         : out std_logic;
-    dos_change      : out std_logic;             -- state is shanging
     vdos            : out std_logic;             -- Virtual DOS
-    pre_vdos        : out std_logic;             -- Virtual DOS
     vdos_on         : in std_logic;
     vdos_off        : in std_logic;
     cpu_req         : out std_logic; 
@@ -676,10 +666,9 @@ port (
     cpu_strobe      : in std_logic;                -- from ARBITER
     cpu_latch       : in std_logic;                -- from ARBITER
     cpu_stall       : out std_logic;             -- for Zclock if HI-> SRALL (ZCLK)
-    loader          : in std_logic;    
     testkey         : in std_logic;
     intt            : in std_logic;
-    tst             : out std_logic_vector(3 downto 0));
+    tst             : out std_logic_vector(2 downto 0));
 end component;
 
 component arbiter is
@@ -689,20 +678,23 @@ port (
     c1              : in std_logic;
     c2              : in std_logic;
     c3              : in std_logic;
-    dram_addr       : out std_logic_vector(23 downto 0);     -- address for dram access
+    
+	 dram_addr       : out std_logic_vector(20 downto 0);     -- address for dram access
     dram_req        : out std_logic;             -- dram request
     dram_rnw        : out std_logic;             -- Read-NotWrite
     dram_bsel       : out std_logic_vector(1 downto 0);     -- byte select: bsel[1] for wrdata[15:8], bsel[0] for wrdata[7:0]
     dram_wrdata     : out std_logic_vector(15 downto 0);     -- data to be written
-    video_addr      : in std_logic_vector(23 downto 0);     -- during access block, only when video_strobe==1
+	 
+    video_addr      : in std_logic_vector(20 downto 0);     -- during access block, only when video_strobe==1
     go              : in std_logic;             -- start video access blocks
     video_bw        : in std_logic_vector(4 downto 0);      -- [4:3] -total cycles: 11 = 8 / 01 = 4 / 00 = 2
+	 
     video_pre_next  : out std_logic;             -- (c1)
     video_next      : out std_logic;             -- (c2) at this signal video_addr may be changed; it is one clock leading the video_strobe
     video_strobe    : out std_logic;             -- (c3) one-cycle strobe meaning that video_data is available
-    video_next_strobe : out std_logic;             -- OUT
     next_vid        : out std_logic;             -- used for TM prefetch
-    cpu_addr        : in std_logic_vector(23 downto 0);
+	 
+    cpu_addr        : in std_logic_vector(20 downto 0);
     cpu_wrdata      : in std_logic_vector(7 downto 0);
     cpu_req         : in std_logic;
     cpu_rnw         : in std_logic;
@@ -710,22 +702,24 @@ port (
     cpu_next        : out std_logic;             -- next cycle is allowed to be used by CPU
     cpu_strobe      : out std_logic;             -- c2 strobe
     cpu_latch       : out std_logic;             -- c2-c3 strobe
-    curr_cpu_o      : out std_logic;             -- c0,c1,c2 strobe
-    dma_addr        : in std_logic_vector(23 downto 0);
+	 
+    dma_addr        : in std_logic_vector(20 downto 0);
     dma_wrdata      : in std_logic_vector(15 downto 0);
     dma_req         : in std_logic;
     dma_z80_lp      : in std_logic;
     dma_rnw         : in std_logic;
     dma_next        : out std_logic;
-    ts_addr         : in std_logic_vector(23 downto 0);
+
+    ts_addr         : in std_logic_vector(20 downto 0);
     ts_req          : in std_logic; 
     ts_z80_lp       : in std_logic; 
     ts_pre_next     : out std_logic;
     ts_next         : out std_logic;
-    tm_addr         : in std_logic_vector(23 downto 0); 
+	 
+    tm_addr         : in std_logic_vector(20 downto 0); 
     tm_req          : in std_logic; 
-    tm_next         : out std_logic;
-    TST             : out std_logic_vector(7 downto 0));
+    tm_next         : out std_logic
+    );
 end component;
 
 component video_top is
@@ -739,22 +733,22 @@ port (
     c1              : in std_logic;
     c2              : in std_logic;
     c3              : in std_logic;
-    vred            : out std_logic_vector(4 downto 0); 
-    vgrn            : out std_logic_vector(4 downto 0);
-    vblu            : out std_logic_vector(4 downto 0);
-    vred_pwm        : out std_logic_vector(1 downto 0); 
-    vgrn_pwm        : out std_logic_vector(1 downto 0);
-    vblu_pwm        : out std_logic_vector(1 downto 0);    
+	 
+    vred            : out std_logic_vector(1 downto 0); 
+    vgrn            : out std_logic_vector(1 downto 0);
+    vblu            : out std_logic_vector(1 downto 0);
+
     hsync           : out std_logic;
     vsync           : out std_logic;
     csync           : out std_logic;
-    vga_blank       : out std_logic;
+
     a               : in std_logic_vector(15 downto 0);
     d               : in std_logic_vector(7 downto 0);        
     zmd             : in std_logic_vector(15 downto 0);
     zma             : in std_logic_vector(7 downto 0);
     cram_we         : in std_logic;
     sfile_we        : in std_logic;
+	 
     zborder_wr      : in std_logic; 
     border_wr       : in std_logic;
     zvpage_wr       : in std_logic;
@@ -781,9 +775,11 @@ port (
     hint_beg_wr     : in std_logic;
     vint_begl_wr    : in std_logic;
     vint_begh_wr    : in std_logic;
+	 
     res             : in std_logic;
     int_start       : out std_logic;
     line_start_s    : out std_logic;
+	 
     video_addr      : out std_logic_vector(20 downto 0);
     video_bw        : out std_logic_vector(4 downto 0);
     video_go        : out std_logic;
@@ -792,23 +788,27 @@ port (
     video_pre_next  : in std_logic; 
     next_video      : in std_logic;
     video_strobe    : in std_logic;
-    video_next_strobe : in std_logic; -- INPUT
+
     ts_addr         : out std_logic_vector(20 downto 0);
     ts_req          : out std_logic;
     ts_z80_lp       : out std_logic;
     ts_pre_next     : in std_logic;
     ts_next         : in std_logic;
+
     tm_addr         : out std_logic_vector(20 downto 0);
     tm_req          : out std_logic;
     tm_next         : in std_logic;
+
     cfg_60hz        : in std_logic;
     sync_pol        : in std_logic;
     vga_on          : in std_logic;
+	 
     osd_hcnt        : out std_logic_vector(9 downto 0);
     osd_vcnt        : out std_logic_vector(8 downto 0);
     osd_paper       : out std_logic;
     osd_blink       : out std_logic;
-    tst             : out std_logic_vector(3 downto 0));
+
+    tst             : in std_logic_vector(2 downto 0));
 end component;
 
 component dma is
@@ -816,32 +816,38 @@ port (
     clk             : in std_logic;
     c2              : in std_logic;
     reset           : in std_logic;
+	 
     dmaport_wr      : in std_logic_vector(8 downto 0);
     dma_act         : out std_logic;
     data            : out std_logic_vector(15 downto 0);
     wraddr          : out std_logic_vector(7 downto 0);
     int_start       : out std_logic;
+	 
     zdata           : in std_logic_vector(7 downto 0);
-    dram_addr       : out std_logic_vector(20 downto 0);
+    
+	 dram_addr       : out std_logic_vector(20 downto 0);
     dram_rddata     : in std_logic_vector(15 downto 0);
     dram_wrdata     : out std_logic_vector(15 downto 0);
     dram_req        : out std_logic;
     dma_z80_lp      : out std_logic;
     dram_rnw        : out std_logic;
     dram_next       : in std_logic;
+	 
     spi_rddata      : in std_logic_vector(7 downto 0);
     spi_wrdata      : out std_logic_vector(7 downto 0);
     spi_req         : out std_logic;
     spi_stb         : in std_logic;
     spi_start       : in std_logic;
+	 
     ide_in          : in std_logic_vector(15 downto 0);
     ide_out         : out std_logic_vector(15 downto 0);
     ide_req         : out std_logic;
     ide_rnw         : out std_logic;
     ide_stb         : in std_logic;
+	 
     cram_we         : out std_logic;
-    sfile_we        : out std_logic;
-    TST             : out std_logic_vector(3 downto 0));
+    sfile_we        : out std_logic
+    );
 end component;
 
 component zmaps is
@@ -889,9 +895,9 @@ port (
     int_start_dma   : in std_logic;
     vdos            : in std_logic; 
     intack          : in std_logic; 
-    --im2v_frm      : in std_logic_vector(2 downto 0);
-    --im2v_lin      : in std_logic_vector(2 downto 0);
-    --im2v_dma      : in std_logic_vector(2 downto 0); 
+    im2v_frm      : in std_logic_vector(2 downto 0);
+    im2v_lin      : in std_logic_vector(2 downto 0);
+    im2v_dma      : in std_logic_vector(2 downto 0); 
     intmask         : in std_logic_vector(7 downto 0);  
     im2vect         : out std_logic_vector(7 downto 0);     
     int_n           : out std_logic);
@@ -1040,7 +1046,7 @@ port map (
 U2: entity work.T80a
 port map (
     RESET_n     => cpu_reset_n,
-    CLK_n       => not clk_cpu,
+    CLK_n       => clk_cpu, -- not clk_cpu,
     CEN         => '1',
 
     A           => cpu_a_bus,
@@ -1100,21 +1106,20 @@ port map (
 TS02: zclock
 port map (
     clk         => clk_28,
-    c1          => c1,
-    c3          => c3,
-    c14Mhz      => c1,
-    zclk_out    => zclk,
+    c0          => c0,
+    c2          => c2,
+    iorq_s      => iorq_s,
+	 zclk_out    => zclk,
     zpos        => zpos,
     zneg        => zneg,
-    dos_stall_o => open,
-    iorq_s      => iorq_s,
-    dos_on      => dos_change,
+	 turbo       => turbo,
+    dos_on      => dos_on,
     vdos_off    => vdos_off,
     cpu_stall   => cpu_stall,
     ide_stall   => '0',
-    external_port => '0',
-    turbo       => turbo);
-
+    external_port => '0'
+    );
+	 
 TS04: zsignals
 port map (
     clk         => clk_28,
@@ -1125,8 +1130,8 @@ port map (
     rfsh_n      => cpu_rfsh_n,
     rd_n        => cpu_rd_n,
     wr_n        => cpu_wr_n,
-    m1          => open,
-    rfsh        => open,
+    m1          => m1,
+    rfsh        => rfsh,
     rd          => rd,
     wr          => wr,
     iorq        => iorq,
@@ -1137,17 +1142,17 @@ port map (
     iorw        => iorw,
     memrd       => memrd,
     memwr       => memwr,
-    memrw       => open,
+    memrw       => memrw,
     opfetch     => opfetch,
     intack      => intack,
     iorq_s      => iorq_s,
-    mreq_s      => open,
+    mreq_s      => mreq_s,
     iord_s      => iord_s,
     iowr_s      => iowr_s,
     iorw_s      => iorw_s,
-    memrd_s     => open,
+    memrd_s     => memrd_s,
     memwr_s     => memwr_s,
-    memrw_s     => open,
+    memrw_s     => memrw_s,
     opfetch_s   => opfetch_s);
 
 TS05: zports
@@ -1159,7 +1164,6 @@ port map (
     dataout     => ena_ports,
     a           => cpu_a_bus,
     rst         => reset,
-    loader      => '0',            -- for load ROM, SPI should be enable 
     opfetch     => opfetch,         -- from zsignals
     rd          => rd,
     wr          => wr,
@@ -1204,11 +1208,11 @@ port map (
     fmaddr      => fmaddr,
     sysconf     => sysconf,
     memconf     => memconf,
-    cacheconf   => cacheconf,
+--    cacheconf   => cacheconf,
     fddvirt     => open,
-    --im2v_frm  => im2v_frm,
-    --im2v_lin  => im2v_lin,
-    --im2v_dma  => im2v_dma,
+    im2v_frm  => im2v_frm,
+    im2v_lin  => im2v_lin,
+    im2v_dma  => im2v_dma,
     intmask     => intmask,
     dmaport_wr  => dmaport_wr,         -- dmaport_wr
     dma_act     => dma_act,         -- from DMA (status of DMA) 
@@ -1220,16 +1224,16 @@ port map (
     ay_bc1      => open,
     covox_wr    => open,
     beeper_wr   => open,
-    rstrom      => "11",
+    rstrom      => rstrom,
     tape_read   => '1',
---    ide_in    => "0000000000000000",
---    ide_out   => open,
---    ide_cs0_n => open,
---    ide_cs1_n => open,
---    ide_req   => open,
---    ide_stb   => '0',
---    ide_ready => '0',
---    ide_stall => open,
+    ide_in    => "0000000000000000",
+    ide_out   => open,
+    ide_cs0_n => open,
+    ide_cs1_n => open,
+    ide_req   => open,
+    ide_stb   => '0',
+    ide_ready => '0',
+    ide_stall => open,
     keys_in     => kb_do_bus(4 downto 0),          -- keys (port FE)
     mus_in      => "11111111",        -- mouse (xxDF)
     kj_in       => joy_do_bus(7 downto 0),
@@ -1247,12 +1251,11 @@ port map (
     wait_start_gluclock => open,         -- begin wait from some ports
     wait_start_comport  => open,
     wait_write  => open,
-    wait_read   => rtc_do_bus,
-    com_data_rx => "11111111",        --uart_do_bus,
-    com_status  => "10010000",        --'1' & uart_tx_empty & uart_tx_fifo_empty & "1000" & uart_rx_avail,
+    wait_read   => rtc_do_bus
+--    com_data_rx => "11111111",        --uart_do_bus,
+--    com_status  => "10010000",        --'1' & uart_tx_empty & uart_tx_fifo_empty & "1000" & uart_rx_avail,
     --com_status => '0' & uart_tx_empty & uart_tx_fifo_empty & "0000" & '1',
-    TST         => open,
-    lock_conf   => '1');
+    );
 
 TS06: zmem
 port map (
@@ -1261,9 +1264,9 @@ port map (
     c1          => c1,
     c2          => c2,
     c3          => c3,
-    zneg        => zneg,
-    zpos        => zpos,
     rst         => reset,             -- PLL locked
+    zpos        => zpos,
+    zneg        => zneg,
     za          => cpu_a_bus,        -- from CPU
     zd_out      => dout_ram,        -- output to Z80 bus 8bit ==>
     zd_ena      => ena_ram,              -- output to Z80 bus enable
@@ -1274,35 +1277,31 @@ port map (
     memwr       => memwr,             -- from zsignals
     memwr_s     => memwr_s,           -- from zsignals 
     turbo       => turbo,
-    cache_en    => cacheconf,          -- from zport
+    cache_en    => cache_en,          -- from zport
     memconf     => memconf(3 downto 0),
     xt_page     => xt_page,
-    xtpage_0    => open,
     rompg       => rompg,         -- 32page = 512kB
     csrom       => csrom,
     romoe_n     => romoe_n,
     romwe_n     => romwe_n,
-    csvrom      => csvrom,
+--    csvrom      => csvrom,
     dos         => dos,
-    dos_on      => open,
-    dos_off     => open,
-    dos_change  => dos_change,
+    dos_on      => dos_on,
+    dos_off     => dos_off,
     vdos        => vdos,
-    pre_vdos    => pre_vdos,
     vdos_on     => vdos_on,
     vdos_off    => vdos_off,
     cpu_req     => cpu_req,
-    cpu_addr    => cpu_addr_20,
+    cpu_addr    => cpu_addr,
     cpu_wrbsel  => cpu_wrbsel,        -- for 16bit data
     cpu_rddata  => dram_rddata,
     cpu_next    => cpu_next,
     cpu_strobe  => cpu_strobe,        -- from ARBITER ACTIVE=HI     
     cpu_latch   => cpu_latch,
     cpu_stall   => cpu_stall,         -- for Zclock if HI-> STALL (ZCLK)
-    loader      => '0',         -- ROM for loader active
-    testkey     => '1',
-    intt        => '0',
-    tst         => open);
+	 testkey     => '0',
+	 intt        => '0'
+);
 
 TS07: arbiter
 port map (
@@ -1316,16 +1315,8 @@ port map (
     dram_rnw    => dram_rnw,
     dram_bsel   => dram_bsel,
     dram_wrdata => dram_wrdata,        -- data to be written
-    video_addr  => "000" & video_addr,    -- during access block, only when video_strobe==1
-    go          => go_arbiter,        -- start video access blocks
-    video_bw    => video_bw,         -- ZX="11001", [4:3] -total cycles: 11 = 8 / 01 = 4 / 00 = 2
-    video_pre_next    => video_pre_next,
-    video_next        => video_next,         -- (c2) at this signal video_addr may be changed; it is one clock leading the video_strobe
-    video_strobe      => video_strobe,     -- (c3) one-cycle strobe meaning that video_data is available
-    video_next_strobe => video_next_strobe,
-    next_vid          => next_video,         -- used for TM prefetch
-    --cpu_addr        => cpu_addr,
-    cpu_addr    => cpu_addr_ext & cpu_addr_20,
+
+    cpu_addr    => cpu_addr,
     cpu_wrdata  => cpu_do_bus,
     cpu_req     => cpu_req,
     cpu_rnw     => rd,
@@ -1333,22 +1324,32 @@ port map (
     cpu_next    => cpu_next,         -- next cycle is allowed to be used by CPU
     cpu_strobe  => cpu_strobe,         -- c2 strobe
     cpu_latch   => cpu_latch,         -- c2-c3 strobe
-    curr_cpu_o  => curr_cpu,
-    dma_addr    => "000" & dma_addr,
+
+    go          => go_arbiter,        -- start video access blocks	 
+    video_bw    => video_bw,         -- ZX="11001", [4:3] -total cycles: 11 = 8 / 01 = 4 / 00 = 2
+    video_addr  => video_addr,    -- during access block, only when video_strobe==1
+    video_pre_next    => video_pre_next,
+    video_next        => video_next,         -- (c2) at this signal video_addr may be changed; it is one clock leading the video_strobe
+    video_strobe      => video_strobe,     -- (c3) one-cycle strobe meaning that video_data is available
+--    video_next_strobe => video_next_strobe,
+    next_vid          => next_video,         -- used for TM prefetch
+
+    dma_addr    => dma_addr,
     dma_wrdata  => dma_wrdata,
     dma_req     => dma_req,
     dma_z80_lp  => dma_z80_lp,
     dma_rnw     => dma_rnw,
     dma_next    => dma_next,
-    ts_addr     => "000" & ts_addr,
+	 
+    ts_addr     => ts_addr,
     ts_req      => ts_req,
     ts_z80_lp   => ts_z80_lp,
     ts_pre_next => ts_pre_next,
     ts_next     => ts_next,
-    tm_addr     => "000" & tm_addr,
+    tm_addr     => tm_addr,
     tm_req      => tm_req,
-    tm_next     => tm_next,
-    TST         => open);
+    tm_next     => tm_next
+);
 
 TS08: video_top
 port map (
@@ -1361,22 +1362,21 @@ port map (
     c1          => c1,
     c2          => c2,
     c3          => c3,
-    vred        => vred_ts,
-    vgrn        => vgrn_ts,
-    vblu        => vblu_ts,
-    vred_pwm    => vred_pwm,
-    vgrn_pwm    => vgrn_pwm,
-    vblu_pwm    => vblu_pwm,
+
+    vred        => vred,
+    vgrn        => vgrn,
+    vblu        => vblu,
     hsync       => hsync_ts,
     vsync       => vsync_ts,
     csync       => open,
-    vga_blank   => csync_ts, 
+
     a           => cpu_a_bus,
     d           => cpu_do_bus,
     zmd         => zmd,
     zma         => zma,
     cram_we     => cram_we,
     sfile_we    => sfile_we,
+	 
     zborder_wr  => zborder_wr,
     border_wr   => border_wr,
     zvpage_wr   => zvpage_wr,
@@ -1403,9 +1403,11 @@ port map (
     hint_beg_wr => hint_beg_wr,
     vint_begl_wr=> vint_begl_wr,
     vint_begh_wr=> vint_begh_wr,
+
     res         => reset,
     int_start   => int_start_frm,
     line_start_s=> int_start_lin,
+
     video_addr  => video_addr,
     video_bw    => video_bw,
     video_go    => go,
@@ -1414,7 +1416,7 @@ port map (
     video_pre_next    => video_pre_next, 
     next_video        => next_video,
     video_strobe      => video_strobe,
-    video_next_strobe => video_next_strobe,
+--    video_next_strobe => video_next_strobe,
     ts_addr     => ts_addr,
     ts_req      => ts_req,
     ts_z80_lp   => ts_z80_lp,
@@ -1426,17 +1428,19 @@ port map (
     cfg_60hz    => not soft_sw(2), -- 0-60Hz, 1-48Hz 
     sync_pol    => '1',            -- 0-positive, 1-negative
     vga_on      => not soft_sw(1), -- 1-31kHZ
-    osd_hcnt    => video_hcnt,
-    osd_vcnt    => video_vcnt,
-    osd_paper   => video_paper,
-    osd_blink   => video_blink,
-    tst         => open);
+	 tst         => (others => '0')	
+--    osd_hcnt    => video_hcnt,
+--    osd_vcnt    => video_vcnt,
+--    osd_paper   => video_paper,
+--    osd_blink   => video_blink
+);
 
 TS09: dma
 port map (
     clk         => clk_28, 
     c2          => c2,
     reset       => reset,
+	 
     dmaport_wr  => dmaport_wr,
     dma_act     => dma_act,
     data        => dma_data,
@@ -1461,8 +1465,8 @@ port map (
     ide_rnw     => open,
     ide_stb     => '0',
     cram_we     => dma_cram_we,
-    sfile_we    => dma_sfile_we, 
-    TST         => open);
+    sfile_we    => dma_sfile_we 
+);
 
 TS10: zmaps
 port map (
@@ -1505,11 +1509,11 @@ port map (
     int_start_frm    => int_start_frm,    --< N1 VIDEO
     int_start_lin    => int_start_lin,    --< N2 VIDEO
     int_start_dma    => int_start_dma,    --< N3 DMA
-    vdos             => pre_vdos,         -- vdos,--pre_vdos
+    vdos             => vdos,             -- vdos,--pre_vdos
     intack           => intack,           --< zsignals  === (intack ? im2vect : 8'hFF)));
-    --im2v_frm       => im2v_frm,         --< ZPORT (2 downto 0); 
-    --im2v_lin       => im2v_lin,         --< ZPORT (2 downto 0);
-    --im2v_dma       => im2v_dma,         --< ZPORT (2 downto 0);
+    im2v_frm         => im2v_frm,         --< ZPORT (2 downto 0); 
+    im2v_lin         => im2v_lin,         --< ZPORT (2 downto 0);
+    im2v_dma         => im2v_dma,         --< ZPORT (2 downto 0);
     intmask          => intmask,          --< ZPORT (7 downto 0);
     im2vect          => im2vect,          --> CPU Din (2 downto 0);     
     int_n            => cpu_int_n_TS);
@@ -1630,10 +1634,9 @@ sd_MOSI <= '1' when loader_act = '1' else spi_sdo;
 -- tsconf
 go_arbiter <= go;
 
-cpu_addr_ext <= csvrom & "00"; --- ROM csrom (only for BANK0)
-
 cpu_di_bus <=
-    rom_do_bus  when csrom = '1' and romoe_n = '0' else
+    rom_do_bus  when csrom = '1' else
+	 dout_ram    when ena_ram = '1' else 
     im2vect     when intack = '1' else
     rtc_do_bus  when (cpu_iorq_n = '0' and cpu_rd_n = '0' and port_bff7 = '1' and port_eff7_reg(7) = '1') else        -- MC146818A
     ssg_cn0_bus when (cpu_iorq_n = '0' and cpu_rd_n = '0' and cpu_a_bus = X"FFFD" and ssg_sel = '0') else    -- TurboSound
@@ -1667,6 +1670,7 @@ rom_a_bus  <= "00" & rompg & cpu_a_bus(13 downto 0);
 rom_rd_n   <= '0' when csrom = '1' and romoe_n = '0' else '1';
                 
 turbo      <= sysconf(1 downto 0); 
+cache_en   <= sysconf(2);
 
 speaker    <= port_xxfe_reg(4);
 tape_in_monitor <= TAPE_IN;
@@ -1737,20 +1741,10 @@ audio_r <= "0000000000000000" when loader_act = '1' or kb_wait = '1' else
                 ("000"  & covox_fb &      "00000") + 
                 ("000"  & saa_out_r &     "00000");
 
--- pwm
---video_r <= vred_pwm & '0';
---video_g <= vgrn_pwm & '0';
---video_b <= vblu_pwm & '0';
-
--- higher bits 555 -> 333
---video_r  <= vred_ts(4 downto 2);
---video_g  <= vgrn_ts(4 downto 2);
---video_b  <= vblu_ts(4 downto 2);
-
 -- mixed lower bits 555 -> 333
-video_r  <= vred_ts(4) & (vred_ts(3) or vred_ts(2)) & (vred_ts(1) or vred_ts(0));
-video_g  <= vgrn_ts(4) & (vgrn_ts(3) or vgrn_ts(2)) & (vgrn_ts(1) or vgrn_ts(0));
-video_b  <= vblu_ts(4) & (vblu_ts(3) or vblu_ts(2)) & (vblu_ts(1) or vblu_ts(0));
+video_r  <= vred(1) & vred(0) & vred(0);
+video_g  <= vgrn(1) & vgrn(0) & vgrn(0);
+video_b  <= vblu(1) & vblu(0) & vblu(0);
 
 video_hs <= hsync_ts;
 video_vs <= vsync_ts;

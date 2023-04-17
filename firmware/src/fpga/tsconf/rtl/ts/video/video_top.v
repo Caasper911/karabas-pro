@@ -12,20 +12,14 @@ module video_top (
 	// input wire t0,	// debug!!!
 
 // video DAC
-	output wire	[4:0] vred,
-	output wire	[4:0] vgrn,
-	output wire	[4:0] vblu,
-
-// pwm out	
-	output wire	[1:0] vred_pwm,
-	output wire	[1:0] vgrn_pwm,
-	output wire	[1:0] vblu_pwm,	
+	output wire	[1:0] vred,
+	output wire	[1:0] vgrn,
+	output wire	[1:0] vblu,
 
 // video syncs
 	output wire	hsync,
 	output wire	vsync,
 	output wire	csync,
-	output wire vga_blank,
 
 // Z80 controls
 	input wire [15:0] a,
@@ -36,127 +30,120 @@ module video_top (
 	input wire 		  sfile_we,
 
 // port write strobes
-		input wire zborder_wr,
-		input wire border_wr,
-		input wire zvpage_wr,
-		input wire vpage_wr,
-		input wire vconf_wr,
-		input wire gx_offsl_wr,
-		input wire gx_offsh_wr,
-		input wire gy_offsl_wr,
-		input wire gy_offsh_wr,
-		input wire t0x_offsl_wr,
-		input wire t0x_offsh_wr,
-		input wire t0y_offsl_wr,
-		input wire t0y_offsh_wr,
-		input wire t1x_offsl_wr,
-		input wire t1x_offsh_wr,
-		input wire t1y_offsl_wr,
-		input wire t1y_offsh_wr,
-		input wire tsconf_wr,
-		input wire palsel_wr,
-		input wire tmpage_wr,
-		input wire t0gpage_wr,
-		input wire t1gpage_wr,
-		input wire sgpage_wr,
-		input wire hint_beg_wr ,
-		input wire vint_begl_wr,
-		input wire vint_begh_wr,
+    input wire zborder_wr,
+    input wire border_wr,
+    input wire zvpage_wr,
+    input wire vpage_wr,
+    input wire vconf_wr,
+    input wire gx_offsl_wr,
+    input wire gx_offsh_wr,
+    input wire gy_offsl_wr,
+    input wire gy_offsh_wr,
+    input wire t0x_offsl_wr,
+    input wire t0x_offsh_wr,
+    input wire t0y_offsl_wr,
+    input wire t0y_offsh_wr,
+    input wire t1x_offsl_wr,
+    input wire t1x_offsh_wr,
+    input wire t1y_offsl_wr,
+    input wire t1y_offsh_wr,
+    input wire tsconf_wr,
+    input wire palsel_wr,
+    input wire tmpage_wr,
+    input wire t0gpage_wr,
+    input wire t1gpage_wr,
+    input wire sgpage_wr,
+    input wire hint_beg_wr ,
+    input wire vint_begl_wr,
+    input wire vint_begh_wr,
 
 // ZX controls
-		input wire  res,
-		output wire int_start,
-		output wire	line_start_s,
+    input wire  res,
+	output wire int_start,
+	output wire	line_start_s,
 
 // DRAM interface
-		output wire [20:0] video_addr,
-		output wire [ 4:0] video_bw,
-		output wire        video_go,
-		input  wire [15:0] dram_rdata,      // raw, should be latched by c2 (video_next)
-		input  wire        video_next,
-		input  wire        video_pre_next,
-		input  wire        next_video,
-		input  wire        video_strobe,
-		input  wire        video_next_strobe,
-		output wire [20:0] ts_addr,
-		output wire        ts_req,
-		output wire        ts_z80_lp,
-		input  wire        ts_pre_next,
-		input  wire        ts_next,
-		output wire [20:0] tm_addr,
-		output wire        tm_req,
-		input  wire        tm_next,
+	output wire [20:0] video_addr,
+	output wire [ 4:0] video_bw,
+	output wire        video_go,
+	input  wire [15:0] dram_rdata,      // raw, should be latched by c2 (video_next)
+	input  wire        video_next,
+	input  wire        video_pre_next,
+	input  wire        next_video,
+	input  wire        video_strobe,
+	output wire [20:0] ts_addr,
+	output wire        ts_req,
+	output wire        ts_z80_lp,
+	input  wire        ts_pre_next,
+	input  wire        ts_next,
+	output wire [20:0] tm_addr,
+	output wire        tm_req,
+	input  wire        tm_next,
 
 // video controls
-		input wire cfg_60hz,
-		input wire sync_pol,
-		input wire vga_on,
+	input wire cfg_60hz,
+	input wire sync_pol,
+	input wire vga_on,
+	
+	// osd
+   output wire [9:0]   osd_hcnt,
+   output wire [8:0]   osd_vcnt,
+   output wire 		  osd_paper,
+   output wire         osd_blink,	
 
-        output wire [9:0] osd_hcnt,
-        output wire [8:0] osd_vcnt,
-        output wire osd_paper,
-        output wire osd_blink,
-
-		output wire [3:0] tst
+	input wire [2:0] tst
 );
 
 	// wire [2:0] tst;
 
 
-		assign ts_z80_lp = tsconf[4];
-
-        assign osd_blink = flash;
+    assign ts_z80_lp = tsconf[4];
 
 // video config
-		wire [7:0] vpage;      // re-latched at line_start
-		wire [7:0] vconf;      //
-		wire [8:0] gx_offs;    //
-		wire [8:0] gy_offs;    //
-		wire [7:0] palsel;     //
-		wire [8:0] t0x_offs;   // 
-		wire [8:0] t1x_offs;   // 
-		wire [7:0] t0gpage;    //
-		wire [7:0] t1gpage;    //
-		wire [7:0] sgpage;     // * not yet !!!
-		wire [8:0] t0y_offs;
-		wire [8:0] t1y_offs;
-		wire [7:0] tsconf;
-		wire [7:0] tmpage;
-		wire [7:0] hint_beg;
-		wire [8:0] vint_beg;
-		wire [8:0] hpix_beg;
-		wire [8:0] hpix_end;
-		wire [8:0] vpix_beg;
-		wire [8:0] vpix_end;
-		wire [5:0] x_tiles;
-		wire [9:0] x_offs_mode;
-		wire [4:0] go_offs;
-		wire [1:0] render_mode;
-		wire tv_hires;
-		wire vga_hires;
-		wire v60hz;
-		//===zx-evo-fpga-564db5e984ef ===
-		wire nogfx  = vconf[5];
-		wire notsu  = vconf[4];
-		wire gfxovr = vconf[3];
-		//wire gfxovr;
-		//===============================
-		wire tv_blank;
+	wire [7:0] vpage;      // re-latched at line_start
+	wire [7:0] vconf;      //
+	wire [8:0] gx_offs;    //
+	wire [8:0] gy_offs;    //
+	wire [7:0] palsel;     //
+	wire [8:0] t0x_offs;   // 
+	wire [8:0] t1x_offs;   // 
+	wire [7:0] t0gpage;    //
+	wire [7:0] t1gpage;    //
+	wire [7:0] sgpage;     // * not yet !!!
+	wire [8:0] t0y_offs;
+	wire [8:0] t1y_offs;
+	wire [7:0] tsconf;
+	wire [7:0] tmpage;
+	wire [7:0] hint_beg;
+	wire [8:0] vint_beg;
+	wire [8:0] hpix_beg;
+	wire [8:0] hpix_end;
+	wire [8:0] vpix_beg;
+	wire [8:0] vpix_end;
+	wire [5:0] x_tiles;
+    wire [9:0] x_offs_mode;
+    wire [4:0] go_offs;
+	wire [1:0] render_mode;
+	wire tv_hires;
+	wire vga_hires;
+	wire v60hz;
+	wire nogfx;
+	wire tv_blank;
 
 // counters
-   wire [7:0] cnt_col;
-   wire [8:0] cnt_row;
+    wire [7:0] cnt_col;
+    wire [8:0] cnt_row;
 	wire cptr;
-   wire [3:0] scnt;
+    wire [3:0] scnt;
 	wire [8:0] lcount;
 
 // synchro
 	wire frame_start;
 	wire pix_start;
 	wire tv_pix_start;
-   wire vga_pix_start;
+    wire vga_pix_start;
 	wire ts_start;
-//	wire vga_blank;
+	wire vga_blank;
 	wire vga_line;
 	wire v_ts;
 	wire v_pf;
@@ -203,13 +190,16 @@ module video_top (
 	wire [9:0] vga_cnt_in;
 	wire [9:0] vga_cnt_out;
 
+// osd 
+		assign osd_blink = flash;
+
 	video_ports video_ports (
 		.clk		  	(clk),
-      .d              (d),
-      .res            (res),
+        .d              (d),
+        .res            (res),
 		.line_start_s	(line_start_s),
-      .border_wr      (border_wr),
-      .zborder_wr     (zborder_wr),
+        .border_wr      (border_wr),
+        .zborder_wr     (zborder_wr),
     	.zvpage_wr	    (zvpage_wr),
     	.vpage_wr	    (vpage_wr),
     	.vconf_wr	    (vconf_wr),
@@ -256,35 +246,36 @@ module video_top (
 
 
 	video_mode video_mode (
-		.clk		  		(clk),
-		.f1			   (f1),
-		.c3			   (c3),
+		.clk		  	(clk),
+		.f1			    (f1),
+		.c3			    (c3),
 		.vpage	    	(vpage),
 		.vconf	    	(vconf),
 		.v60hz	    	(v60hz),
 		.fetch_sel		(fetch_sel),
 		.fetch_bsl		(fetch_bsl),
-		.fetch_cnt	   (scnt),
-		.fetch_stb	   (fetch_stb),
-		.txt_char	   (fetch_temp[15:0]),
-		.gx_offs			(gx_offs),
+		.fetch_cnt	    (scnt),
+		.fetch_stb	    (fetch_stb),
+		.txt_char	    (fetch_temp[15:0]),
+		.gx_offs		(gx_offs),
 		.x_offs_mode	(x_offs_mode),
-		.hpix_beg	   (hpix_beg),
-		.hpix_end	   (hpix_end),
-		.vpix_beg	   (vpix_beg),
-		.vpix_end	   (vpix_end),
-		.x_tiles	    	(x_tiles),
-      .go_offs       (go_offs),
-      .cnt_col       (cnt_col),
-      .cnt_row       (cnt_row),
-      .cptr	        	(cptr),
+		.hpix_beg	    (hpix_beg),
+		.hpix_end	    (hpix_end),
+		.vpix_beg	    (vpix_beg),
+		.vpix_end	    (vpix_end),
+		.x_tiles	    (x_tiles),
+        .go_offs        (go_offs),
+        .cnt_col        (cnt_col),
+        .cnt_row        (cnt_row),
+        .cptr	        (cptr),
 		.line_start_s	(line_start_s),
-		.pix_start	   (pix_start),
+		.pix_start	    (pix_start),
 		.tv_hires		(tv_hires),
-		.vga_hires	   (vga_hires),
-		.pix_stb	    	(pix_stb),
+		.vga_hires	    (vga_hires),
+		.nogfx		    (nogfx),
+		.pix_stb	    (pix_stb),
 		.render_mode	(render_mode),
-		.video_addr	   (video_addr),
+		.video_addr	    (video_addr),
 		.video_bw		(video_bw)
 );
 
@@ -299,9 +290,9 @@ module video_top (
 		.hpix_end		(hpix_end),
 		.vpix_beg		(vpix_beg),
 		.vpix_end		(vpix_end),
-      .go_offs        (go_offs),
-      .x_offs         (x_offs_mode[1:0]),
-      .y_offs_wr      (gy_offsl_wr || gy_offsh_wr),
+        .go_offs        (go_offs),
+        .x_offs         (x_offs_mode[1:0]),
+        .y_offs_wr      (gy_offsl_wr || gy_offsh_wr),
 		.line_start_s	(line_start_s),
 		.hint_beg		(hint_beg),
 		.vint_beg		(vint_beg),
@@ -314,9 +305,9 @@ module video_top (
 		.vga_cnt_out	(vga_cnt_out),
 		.ts_raddr	    (ts_raddr),
 		.lcount			(lcount),
-      .cnt_col        (cnt_col),
-      .cnt_row        (cnt_row),
-      .cptr	        (cptr),
+        .cnt_col        (cnt_col),
+        .cnt_row        (cnt_row),
+        .cptr	        (cptr),
 		.scnt			(scnt),
 		.frame			(frame),
 		.flash			(flash),
@@ -339,14 +330,14 @@ module video_top (
 		.v60hz			(v60hz),
 		.video_go		(video_go),
 		.video_pre_next	(video_pre_next),
-        .osd_hcnt       (osd_hcnt),
-        .osd_vcnt       (osd_vcnt),
-        .osd_paper      (osd_paper)
+		.osd_hcnt(osd_hcnt),
+		.osd_vcnt(osd_vcnt),
+		.osd_paper(osd_paper)
 );
 
 
 	video_fetch video_fetch (
-		.clk				(clk),
+		.clk			(clk),
 		.f_sel			(fetch_sel),
 		.b_sel			(fetch_bsl),
 		.fetch_stb		(fetch_stb),
@@ -354,97 +345,94 @@ module video_top (
 		.fetch_temp		(fetch_temp),
 		.video_strobe	(video_strobe),
 		.video_data		(dram_rdata)
-		//.video_data		(16'b0000111100001111) //-OK
 );
 
 	video_ts video_ts (
-			.clk		    (clk),
-			.start          (ts_start),
-			.line			(lcount),
-			.v_ts		    (v_ts),
+		.clk		    (clk),
+        .start          (ts_start),
+		.line			(lcount),
+		.v_ts		    (v_ts),
 
-			.tsconf         (tsconf),
-			.t0gpage        (t0gpage),
-			.t1gpage        (t1gpage),
-			.sgpage         (sgpage),
-			.tmpage         (tmpage),
-			.num_tiles		(x_tiles),
-			.v_pf	        (v_pf),
-			.t0x_offs       (t0x_offs),
-			.t1x_offs       (t1x_offs),
-			.t0y_offs       (t0y_offs),
-			.t1y_offs       (t1y_offs),
-			.t0_palsel      (palsel[5:4]),
-			.t1_palsel      (palsel[7:6]),
+        .tsconf         (tsconf),
+        .t0gpage        (t0gpage),
+        .t1gpage        (t1gpage),
+        .sgpage         (sgpage),
+        .tmpage         (tmpage),
+		.num_tiles		(x_tiles),
+		.v_pf	        (v_pf),
+        .t0x_offs       (t0x_offs),
+        .t1x_offs       (t1x_offs),
+        .t0y_offs       (t0y_offs),
+        .t1y_offs       (t1y_offs),
+        .t0_palsel      (palsel[5:4]),
+        .t1_palsel      (palsel[7:6]),
 
-			.dram_addr      (tm_addr),
-			.dram_req       (tm_req),
-			.dram_next      (tm_next),
-			.dram_rdata     (dram_rdata),
+        .dram_addr      (tm_addr),
+        .dram_req       (tm_req),
+        .dram_next      (tm_next),
+        .dram_rdata     (dram_rdata),
 
-			.tsr_go         (tsr_go),
-			.tsr_addr       (tsr_addr),
-			.tsr_line       (tsr_line),
-			.tsr_page       (tsr_page),
-			.tsr_pal        (tsr_pal),
-			.tsr_x          (tsr_x),
-			.tsr_xs         (tsr_xs),
-			.tsr_xf         (tsr_xf),
-			.tsr_rdy        (tsr_rdy),
+        .tsr_go         (tsr_go),
+        .tsr_addr       (tsr_addr),
+        .tsr_line       (tsr_line),
+        .tsr_page       (tsr_page),
+        .tsr_pal        (tsr_pal),
+        .tsr_x          (tsr_x),
+        .tsr_xs         (tsr_xs),
+        .tsr_xf         (tsr_xf),
+        .tsr_rdy        (tsr_rdy),
 
-			.sfile_addr_in	(zma),
-			.sfile_data_in	(zmd),
-			.sfile_we		(sfile_we)
+		.sfile_addr_in	(zma),
+		.sfile_data_in	(zmd),
+		.sfile_we		(sfile_we)
 );
 
 
 	video_ts_render video_ts_render (
-			.clk		    (clk),
+		.clk		    (clk),
 
-			.reset          (ts_start),
+        .reset          (ts_start),
 
-			.tsr_go         (tsr_go),
-			.addr           (tsr_addr),
-			.line           (tsr_line),
-			.page           (tsr_page),
-			.pal            (tsr_pal),
-			.x_coord        (tsr_x),
-			.x_size         (tsr_xs),
-			.flip           (tsr_xf),
-			.mem_rdy        (tsr_rdy),
+        .tsr_go         (tsr_go),
+        .addr           (tsr_addr),
+        .line           (tsr_line),
+        .page           (tsr_page),
+        .pal            (tsr_pal),
+        .x_coord        (tsr_x),
+        .x_size         (tsr_xs),
+        .flip           (tsr_xf),
+        .mem_rdy        (tsr_rdy),
 
-			.ts_waddr       (ts_waddr),
-			.ts_wdata       (ts_wdata),
-			.ts_we          (ts_we),
+        .ts_waddr       (ts_waddr),
+        .ts_wdata       (ts_wdata),
+        .ts_we          (ts_we),
 
-			.dram_addr      (ts_addr),
-			.dram_req       (ts_req),
-			.dram_pre_next  (ts_pre_next),
-			.dram_next      (ts_next),
-			.dram_rdata     (dram_rdata)
+        .dram_addr      (ts_addr),
+        .dram_req       (ts_req),
+        .dram_pre_next  (ts_pre_next),
+        .dram_next      (ts_next),
+        .dram_rdata     (dram_rdata)
 );
 
 
 	video_render video_render (
-		.clk		    	(clk),
-		.c1			   (c1),
-		.hvpix 	      (hvpix),
+		.clk		    (clk),
+		.c1			    (c1),
+		.hvpix 	        (hvpix),
 		.nogfx			(nogfx),
-		.notsu			(notsu),
-		.gfxovr			(gfxovr),
 		.flash			(flash),
 		.hires			(tv_hires),
-		.psel				(scnt),
+		.psel			(scnt),
 		.palsel			(palsel[3:0]),
 		.render_mode	(render_mode),
-		.data	 	    	(fetch_data),
-		.border_in 	   (border),
-		.tsdata_in 	   (ts_rdata),
-		.vplex_out 	   (vplex)
+		.data	 	    (fetch_data),
+		.border_in 	    (border),
+		.tsdata_in 	    (ts_rdata),
+		.vplex_out 	    (vplex)
 );
 
 	video_out video_out (
-		.clk				(clk),
+		.clk			(clk),
 		.f0				(f0),
 		.c3				(c3),
 		.vga_on			(vga_on),
@@ -453,21 +441,17 @@ module video_top (
 		.vga_line		(vga_line),
 		.frame			(frame),
 		.palsel			(palsel[3:0]),
-	   .plex_sel_in	({h1, f1}),
+	    .plex_sel_in	({h1, f1}),
 		.tv_hires		(tv_hires),
 		.vga_hires		(vga_hires),
 		.cram_addr_in	(zma),
 		.cram_data_in	(zmd[14:0]),
-		.cram_we			(cram_we),
-	   .vplex_in		(vplex),
-	   .vgaplex			(vgaplex),
-		.vred				(vred),
-	   .vgrn				(vgrn),
-	   .vblu				(vblu),
-		.vred_pwm		(vred_pwm),
-	   .vgrn_pwm		(vgrn_pwm),
-	   .vblu_pwm		(vblu_pwm),		
-		.tst           (tst)
+		.cram_we		(cram_we),
+	    .vplex_in		(vplex),
+	    .vgaplex		(vgaplex),
+		.vred			(vred),
+	    .vgrn			(vgrn),
+	    .vblu			(vblu)
 );
 
 
@@ -508,10 +492,10 @@ module video_top (
 	video_vmem video_vmem(
 		.clock		(clk),
 		.wraddress	(vga_cnt_in),
-		.data			(vplex),
-		.wren			(c3),
-	   .rdaddress	(vga_cnt_out),
-	   .q				(vgaplex)
+		.data		(vplex),
+		.wren		(c3),
+	    .rdaddress	(vga_cnt_out),
+	    .q			(vgaplex)
 );
 
 

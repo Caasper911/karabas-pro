@@ -16,7 +16,7 @@ entity dram2sram is
         BSEL        : in std_logic_vector(1 downto 0); -- bsel[0] - wrdata[7:0], bsel[1] - wrdata[15:8]
         DO          : out std_logic_vector(15 downto 0);        
         
-        RAM_A       : out std_logic_vector(21 downto 0);
+        RAM_A       : buffer std_logic_vector(21 downto 0);
         RAM_DI      : out std_logic_vector(7 downto 0);
         RAM_DO      : in std_logic_vector(7 downto 0);
         RAM_NWR     : buffer std_logic;
@@ -33,12 +33,13 @@ begin
 
 	process (CLK, REQ, RNW, C3, C0)
 	begin 
+			-- address is latched at c3, data should be available at c2 of next Dram  cycle
         if rising_edge(CLK) then
 				-- address
             if (C3 = '1') then 
-                RAM_A <= '0' & ADDR;
+                RAM_A <= ADDR & '0';
             elsif (C0 = '1') then 
-                RAM_A <= '1' & ADDR;
+                RAM_A <= std_logic_vector(unsigned(RAM_A) + 1);
             end if;
 
             -- read data

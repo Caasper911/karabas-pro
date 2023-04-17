@@ -63,12 +63,12 @@ module zsignals(
     assign memwr = mreq && !rd;
     assign memrw = mreq && rdwr;
     assign opfetch = memrd && m1;
-    assign intack = !iorq_n && m1;	// NOT masked by M1
+    assign intack = !iorq_n && m1;		// NOT masked by M1
 
 // strobed
-    assign iorq_s = iorq_r[0] && !iorq_r[1];
-    assign mreq_s = mreq_r[0] && !mreq_r[1];
-    assign iord_s = iorq_s && rd;
+	assign iorq_s = iorq_r[0] && !iorq_r[1];
+	assign mreq_s = mreq_r[0] && !mreq_r[1];
+	assign iord_s = iorq_s && rd;
     assign iowr_s = iorq_s && wr;
     assign iorw_s = iorq_s && rdwr;
     assign memrd_s = mreq_s && rd;
@@ -77,18 +77,18 @@ module zsignals(
     assign opfetch_s = memrd_s && m1;
 
 // latch inputs on FPGA clock
-    reg [1:0] iorq_r, mreq_r;
-    always @(posedge clk) if (zpos)
-    begin
-	iorq_r[0] <= iorq;
-	mreq_r[0] <= mreq;
-    end
+	reg [1:0] iorq_r, mreq_r;
+	always @(posedge clk) if (zpos)
+	begin
+		iorq_r[0] <= iorq;
+		mreq_r[0] <= mreq;
+	end
 		
-    always @(posedge clk)
-    begin
-	iorq_r[1] <= iorq_r[0];
-	mreq_r[1] <= mreq_r[0];
-    end
+	always @(posedge clk)
+	begin
+		iorq_r[1] <= iorq_r[0];
+		mreq_r[1] <= mreq_r[0];
+	end
 
 
 endmodule

@@ -58,35 +58,34 @@ module arbiter(
 	input wire c3,
 
 // dram.v interface
-	output wire [23:0] dram_addr,   // address for dram access
+	output wire [20:0] dram_addr,   // address for dram access
 	output wire        dram_req,    // dram request
 	output wire        dram_rnw,    // Read-NotWrite
 	output wire [ 1:0] dram_bsel,   // byte select: bsel[1] for wrdata[15:8], bsel[0] for wrdata[7:0]
 	output wire [15:0] dram_wrdata, // data to be written
 
 // video
-	input wire [23:0] video_addr,   // during access block, only when video_strobe==1
+	input wire [20:0] video_addr,   // during access block, only when video_strobe==1
 	input wire        go, 			// start video access blocks
 	input wire [ 4:0] video_bw,			// [4:3] - total cycles: 11 = 8 / 01 = 4 / 00 = 2
 										// [2:0] - need cycles
-	output wire       video_pre_next,	 // (c1)
-	output wire	      video_next,		    // (c2) at this signal video_addr may be changed; it is one clock leading the video_strobe
-	output wire       video_strobe, 	    // (c3) one-cycle strobe meaning that video_data is available
-	output wire       video_next_strobe, // (c3) one-cycle strobe meaning that video_data is available
-	output wire       next_vid,		    // used for TM prefetch
+	output wire       video_pre_next,	// (c1)
+	output wire	      video_next,		// (c2) at this signal video_addr may be changed; it is one clock leading the video_strobe
+	output wire       video_strobe, 	// (c3) one-cycle strobe meaning that video_data is available
+	output wire       next_vid,			// used for TM prefetch
 	
 // CPU
-	input wire [23:0] cpu_addr,
+	input wire [20:0] cpu_addr,
 	input wire [ 7:0] cpu_wrdata,
 	input wire        cpu_req,
 	input wire        cpu_rnw,
 	input wire        cpu_wrbsel,
-	output reg        cpu_next,		// next cycle is allowed to be used by CPU
-	output reg        cpu_strobe,		// c2 strobe
-   output reg        cpu_latch,		// c2-c3 strobe
-   output wire       curr_cpu_o,		// 
+	output reg        cpu_next,			// next cycle is allowed to be used by CPU
+    output reg        cpu_strobe,		// c2 strobe
+    output reg        cpu_latch,		// c2-c3 strobe
+
 // DMA
-	input wire [23:0] dma_addr,
+	input wire [20:0] dma_addr,
 	input wire [15:0] dma_wrdata,
 	input wire        dma_req,
 	input wire        dma_z80_lp,
@@ -94,33 +93,23 @@ module arbiter(
 	output wire       dma_next,
 
 // TS
-	input wire [23:0] ts_addr,
+	input wire [20:0] ts_addr,
 	input wire 	      ts_req,
 	input wire 	      ts_z80_lp,
 	output wire       ts_pre_next,
 	output wire       ts_next,
 
 // TM
-	input wire [23:0] tm_addr,
+	input wire [20:0] tm_addr,
 	input wire 	      tm_req,
-	output wire       tm_next,
-	
-//-----
-   output wire [7:0] TST
+	output wire       tm_next
 
 );
-
-   assign curr_cpu_o = curr_cpu;
-   
-	assign TST[0] = curr_dma;
-	assign TST[1] = curr_cpu;
-	assign TST[2] = dram_rnw;
-	assign TST[7:3] = 5'b00000;
 
 	localparam CYCLES    = 5;
 	
 	localparam CYC_CPU   = 5'b00001;
-	localparam CYC_VID   = 5'b00010;
+	localparam CYC_VID = 5'b00010;
 	localparam CYC_TS    = 5'b00100;
 	localparam CYC_TM    = 5'b01000;
 	localparam CYC_DMA   = 5'b10000;
@@ -137,8 +126,8 @@ module arbiter(
 
 	wire next_cpu = next_cycle[CPU];
 	assign next_vid = next_cycle[VIDEO];
-//	wire next_ts  = next_cycle[TS];
-//	wire next_tm  = next_cycle[TM];
+	wire next_ts  = next_cycle[TS];
+	wire next_tm  = next_cycle[TM];
 	wire next_dma = next_cycle[DMA];
 
 	wire curr_cpu = curr_cycle[CPU];
@@ -152,8 +141,8 @@ module arbiter(
 // how many cycles left to the end of block (7..0)
 	wire [2:0] blk_nrem = (video_start && go) ? {video_bw[4:3], 1'b1} : (video_start ? 3'd0 : (blk_rem - 3'd1));
 	wire bw_full = ~|{video_bw[4] & video_bw[2], video_bw[3] & video_bw[1], video_bw[0]}; // stall when 000/00/0
-   wire video_start = ~|blk_rem;
-   wire video_only = stall || (vid_rem == blk_rem);
+    wire video_start = ~|blk_rem;
+    wire video_only = stall || (vid_rem == blk_rem);
 	wire video_idle = ~|vid_rem;
 
 	reg [2:0] blk_rem;       // remaining accesses in a block (7..0)
@@ -185,8 +174,8 @@ module arbiter(
     wire dev_over_cpu = 0;
 
 	always @*
-		if (video_start)    // video burst start 
-			if (go)          // video active line - 38us-ON, 26us-ON
+		if (video_start)    // video burst start
+			if (go)             // video active
 			begin
 				cpu_next = dev_over_cpu ? 1'b0 : !bw_full;
 				next_cycle = dev_over_cpu ? CYC_VID : (bw_full ? CYC_VID : (cpu_req ? CYC_CPU : CYC_VID));
@@ -206,21 +195,18 @@ module arbiter(
 
 	always @(posedge clk) if (c3)
 		curr_cycle <= next_cycle;
+
+
 // DRAM interface
 	assign dram_wrdata = curr_dma ? dma_wrdata : {2{cpu_wrdata[7:0]}};		// write data has to be clocked at c0 in dram.v
-	//assign dram_wrdata = curr_dma ? 16'h0000 : {2{cpu_wrdata[7:0]}};		// write data has to be clocked at c0 in dram.v
-	assign dram_bsel[1:0] = curr_dma ? 2'b11 : {cpu_wrbsel, ~cpu_wrbsel};
-	assign dram_addr = {24{curr_cpu}} & cpu_addr
-					 | {24{curr_vid}} & video_addr
-					 | {24{curr_ts}}  & ts_addr
-					 | {24{curr_tm}}  & tm_addr
-					 | {24{curr_dma}} & dma_addr;
-	//====================================================
-	assign dram_req = |next_cycle; //for c3=1, rising edge
-	assign dram_rnw = next_cpu ? cpu_rnw : (next_dma ? dma_rnw : 1'b1);
-	//assign dram_req = |curr_cycle;
-	//assign dram_rnw = curr_cpu ? cpu_rnw : (curr_dma ? dma_rnw : 1'b1);
-	
+	assign dram_bsel[1:0] = next_dma ? 2'b11 : {cpu_wrbsel, ~cpu_wrbsel};
+	assign dram_req = |next_cycle;
+    assign dram_rnw = next_cpu ? cpu_rnw : (next_dma ? dma_rnw : 1'b1);
+	assign dram_addr = {21{next_cpu}} & cpu_addr
+					 | {21{next_vid}} & video_addr
+					 | {21{next_ts}}  & ts_addr
+					 | {21{next_tm}}  & tm_addr
+					 | {21{next_dma}} & dma_addr;
 
 	reg cpu_rnw_r;
 	always @(posedge clk) if (c3)
@@ -237,13 +223,11 @@ module arbiter(
 		else if (c2)
 			cpu_strobe <= 1'b0;
 		else if (c3)
-			cpu_latch <= 1'b0; 
-
+			cpu_latch <= 1'b0;
 
 	assign video_pre_next = curr_vid & c1;
 	assign video_next = curr_vid & c2;
 	assign video_strobe = curr_vid && c3;
-	assign video_next_strobe = next_vid && c3;
 
 	assign ts_pre_next = curr_ts & c1;
 	assign ts_next = curr_ts & c2;

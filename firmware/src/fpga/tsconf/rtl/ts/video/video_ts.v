@@ -377,7 +377,7 @@ module video_ts (
 	wire [15:0] sfile_rdata;
 
 video_sfile video_sfile (
-	.clock	    (!clk),	// MVV 18.10.2014
+	.clock	    (clk),
 	.wraddress	(sfile_addr_in),
 	.data		(sfile_data_in),
 	.wren		(sfile_we),
@@ -391,7 +391,7 @@ video_sfile video_sfile (
 	wire [15:0] tmb_rdata;
 
     video_tmbuf video_tmbuf (
-        .clock      (!clk),	// MVV 18.10.2014
+        .clock      (clk),
         .data       (dram_rdata),
         // .data       (0),
         .wraddress  (tmb_waddr),

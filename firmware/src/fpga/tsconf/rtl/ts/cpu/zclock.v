@@ -24,16 +24,14 @@
 module zclock(
 
 	input clk,
-	//output reg zclk_out, // generated Z80 clock - passed through inverter externally!
-	output wire zclk_out,
-	input c1, c3, c14Mhz,     
+	output reg zclk_out, // generated Z80 clock - passed through inverter externally!
+	input c0, c2,
 
 	input  wire iorq_s,
 	input  wire external_port,
 
 	output reg zpos,
 	output reg zneg,
-	output wire dos_stall_o,
 
 // stall enables and triggers
 	input  wire cpu_stall,
@@ -45,29 +43,26 @@ module zclock(
 	                   // 2'b01 -  7.0 MHz
 	                   // 2'b1x - 14.0 MHz
 );
-	reg zclk_o;
-   assign zclk_out = ~zclk_o;
-   assign dos_stall_o = !stall_count_end || dos_on;
-	//`ifdef SIMULATE
-//	initial // simulation...
-//	begin
-//		c2_cnt = 1'b0;
-//		turbo   = 2'b00;
-//		old_rfsh_n  = 1'b1;
-//		clk14_src   = 1'b0;
-//
-//		zclk_out = 1'b0;
-//	end
-//`endif
 
-   
+
+`ifdef SIMULATE
+	initial // simulation...
+	begin
+		c2_cnt = 1'b0;
+		turbo   = 2'b00;
+		old_rfsh_n  = 1'b1;
+		clk14_src   = 1'b0;
+
+		zclk_out = 1'b0;
+	end
+`endif
 
 
 // wait generator
-   wire dos_io_stall = stall_start || !stall_count_end;
-   wire stall_start = dos_stall || io_stall;
-   wire dos_stall = dos_on || vdos_off; 
-   wire io_stall = iorq_s && external_port && turbo[1]; //- NOT WORK
+    wire dos_io_stall = stall_start || !stall_count_end;
+    wire stall_start = dos_stall || io_stall;
+    wire dos_stall = dos_on || vdos_off;
+    wire io_stall = iorq_s && external_port && turbo[1];
 	wire stall_count_end = stall_count[3];
 
 	reg [3:0] stall_count;
@@ -80,7 +75,7 @@ module zclock(
 				stall_count <= 4'd0;	// 8 tacts 28MHz (1 tact 3.5MHz)
 		end
 		else if (!stall_count_end)
-			stall_count <= stall_count + 3'd1; 		
+			stall_count <= stall_count + 3'd1;
 
 
 // Z80 clocking pre-strobes
@@ -89,32 +84,30 @@ module zclock(
 
 	reg clk14_src;	// source for 14MHz clock
 	always @(posedge clk)
-	if (!stall && !(c14Mhz == 1'b1 && !clk14_src)) // c14Mhz =c1
-	//if (!stall) 	
+	if (!stall)
 		clk14_src <= ~clk14_src;
 
 	wire pre_zpos_140 = clk14_src;
 	wire pre_zneg_140 = ~clk14_src;
 
-	wire pre_zpos_70 = c1;
-	wire pre_zneg_70 = c3;
+	wire pre_zpos_70 = c2;
+	wire pre_zneg_70 = c0;
 
-	wire pre_zpos_35 = c1_cnt && c1;
-	wire pre_zneg_35 = !c1_cnt && c1;
+	wire pre_zpos_35 = c2_cnt && c2;
+	wire pre_zneg_35 = !c2_cnt && c2;
 
-	reg c1_cnt;
-	always @(posedge clk) if (c1)
-		c1_cnt <= ~c1_cnt;
+	reg c2_cnt;
+	always @(posedge clk) if (c2)
+		c2_cnt <= ~c2_cnt;
 
 		
 // Z80 clocking strobes
-//---------------INPUT----count generator-     NO
 	wire stall = cpu_stall || dos_io_stall || ide_stall;
 
 	always @(posedge clk)
 	begin
-		zpos <= !stall && pre_zpos && zclk_o;
-		zneg <= !stall && pre_zneg && !zclk_o;
+		zpos <= !stall && pre_zpos && zclk_out;
+		zneg <= !stall && pre_zneg && !zclk_out;
 	end
 
 	
@@ -128,10 +121,10 @@ module zclock(
 	always @(negedge clk)
 	begin
 		if (zpos)
-			zclk_o <= 1'b0;
+			zclk_out <= 1'b0;
 
 		if (zneg)
-			zclk_o <= 1'b1;
+			zclk_out <= 1'b1;
 	end
 
 

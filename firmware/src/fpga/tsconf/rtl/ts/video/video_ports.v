@@ -80,16 +80,10 @@ module video_ports (
 			
 		else if (vint_begl_wr)
 			vint_beg[7:0] <= d;
-			//vint_beg[7:0] <= 8'd0;  //--- мигает  vint_beg[8] <= 1'b0; //----
-			//vint_beg[7:0] <= 8'd10; //---мигает vint_beg[8] <= 1'b0;   //----
-			//vint_beg[7:0] <= 8'd20; //---мигает vint_beg[8] <= 1'b0;   //----
-			//vint_beg[7:0] <= 8'd50;--- нет картинки 
-			//vint_beg[7:0] <= 8'd255; 
 			
 		else if (vint_begh_wr)
 		begin
 			vint_beg[8] <= d[0];
-			//vint_beg[8] <= 1'b0;   //----
 			vint_inc <= d[7:4];
 		end
 		
@@ -100,7 +94,7 @@ module video_ports (
 		if (res)
 		begin
 			vpage_r     <= 8'h05;
-   		vconf_r     <= 8'h00;
+   			vconf_r     <= 8'h00;
 			gx_offs_r   <= 9'b0;
 			palsel_r    <= 8'h0F;
 			gy_offs     <= 9'b0;
@@ -110,8 +104,8 @@ module video_ports (
 
         else
         begin
-         if (zborder_wr  )   border          <= {5'b11110, d[2:0]};
-         if (border_wr   )   border          <= d;
+            if (zborder_wr  )   border          <= {5'b11110, d[2:0]};
+            if (border_wr   )   border          <= d;
 			if (gy_offsl_wr	)   gy_offs[7:0]    <= d;
 			if (gy_offsh_wr	)   gy_offs[8]      <= d[0];
 			if (t0y_offsl_wr)   t0y_offs[7:0]   <= d;
