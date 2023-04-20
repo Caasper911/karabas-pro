@@ -197,6 +197,25 @@ set_global_assignment -name OPTIMIZE_MULTI_CORNER_TIMING ON
 set_parameter -name build_version 00000000
 #set_parameter -name enable_saa1099 true
 
+
+
+set_global_assignment -name VHDL_FILE ../../rtl/debug_osd.vhd
+set_global_assignment -name VHDL_FILE ../../rtl/rtc/mc146818a.vhd
+set_global_assignment -name VHDL_FILE ../../rtl/rtc/CMOS.vhd
+set_global_assignment -name VERILOG_FILE ../../rtl/ts/z80/memory/cache_data.v
+set_global_assignment -name VERILOG_FILE ../../rtl/ts/z80/memory/cache_addr.v
+set_global_assignment -name VERILOG_FILE ../../rtl/ts/video/mem/video_vmem.v
+set_global_assignment -name VERILOG_FILE ../../rtl/ts/video/mem/video_tsline1.v
+set_global_assignment -name VERILOG_FILE ../../rtl/ts/video/mem/video_tsline0.v
+set_global_assignment -name VERILOG_FILE ../../rtl/ts/video/mem/video_tmbuf.v
+set_global_assignment -name VERILOG_FILE ../../rtl/ts/video/mem/video_sfile.v
+set_global_assignment -name VERILOG_FILE ../../rtl/ts/video/mem/video_cram.v
+set_global_assignment -name VHDL_FILE ../../rtl/T80/T80_Pack.vhd
+set_global_assignment -name VHDL_FILE ../../rtl/T80/T80_Reg.vhd
+set_global_assignment -name VHDL_FILE ../../rtl/T80/T80_MCode.vhd
+set_global_assignment -name VHDL_FILE ../../rtl/T80/T80_ALU.vhd
+set_global_assignment -name VHDL_FILE ../../rtl/T80/T80.vhd
+set_global_assignment -name VHDL_FILE ../../rtl/T80/T80pa.vhd
 set_global_assignment -name VHDL_FILE ../../rtl/karabas_pro.vhd
 set_global_assignment -name VHDL_FILE ../../rtl/karabas_hw/karabas_hw.vhd
 set_global_assignment -name QIP_FILE ../../rtl/karabas_hw/pll/altpll0.qip
@@ -205,11 +224,6 @@ set_global_assignment -name VHDL_FILE ../../rtl/karabas_hw/loader/loader.vhd
 set_global_assignment -name VHDL_FILE ../../rtl/karabas_hw/spi/spi_slave.vhd
 set_global_assignment -name VHDL_FILE ../../rtl/karabas_hw/spi/spi_master.vhd
 set_global_assignment -name VHDL_FILE ../../rtl/karabas_hw/memory/memory.vhd
-set_global_assignment -name VHDL_FILE ../../rtl/t80se/T80a.vhd
-set_global_assignment -name VHDL_FILE ../../rtl/t80se/T80.vhd
-set_global_assignment -name VHDL_FILE ../../rtl/t80se/T80_Reg.vhd
-set_global_assignment -name VHDL_FILE ../../rtl/t80se/T80_MCode.vhd
-set_global_assignment -name VHDL_FILE ../../rtl/t80se/T80_ALU.vhd
 set_global_assignment -name VHDL_FILE ../../rtl/karabas_hw/video/overlay.vhd
 set_global_assignment -name VERILOG_FILE ../../rtl/karabas_hw/video/rom_font1.v
 set_global_assignment -name VERILOG_FILE ../../rtl/karabas_hw/video/screen1.v
@@ -225,7 +239,6 @@ set_global_assignment -name VHDL_FILE ../../rtl/karabas_hw/dac/tda1543.vhd
 set_global_assignment -name VHDL_FILE ../../rtl/karabas_hw/storage/bus_port.vhd
 set_global_assignment -name QIP_FILE ../../rtl/karabas_hw/storage/bus_mux.qip
 set_global_assignment -name VHDL_FILE ../../rtl/karabas_hw/avr/avr.vhd
-set_global_assignment -name VHDL_FILE ../../rtl/karabas_hw/avr/spi_slave.vhd
 set_global_assignment -name QIP_FILE ../../rtl/karabas_hw/avr/rtc.qip
 set_global_assignment -name QIP_FILE ../../rtl/karabas_hw/avr/queue.qip
 set_global_assignment -name SDC_FILE karabas_pro_ep4ce10.sdc
@@ -263,6 +276,6 @@ set_global_assignment -name VERILOG_FILE ../../rtl/ts/z80/zmem.v
 set_global_assignment -name VERILOG_FILE ../../rtl/ts/z80/zports.v
 set_global_assignment -name VERILOG_FILE ../../rtl/ts/z80/zsignals.v
 set_global_assignment -name VERILOG_FILE ../../rtl/ts/tune.v
-
-
+set_global_assignment -name QIP_FILE ../../rtl/rom/rom.qip
+set_global_assignment -name QIP_FILE ../../rtl/ts/video/mem/video_cram.qip
 set_instance_assignment -name PARTITION_HIERARCHY root_partition -to | -section_id Top

@@ -440,7 +440,9 @@ begin
 		rdaddress => RTC_A,
 		q			 => rtcr_do
 	);
-	RTC_DO <= rtc_scancode when RTC_A = x"F0" else rtcr_do;
+	RTC_DO <= rtc_scancode when RTC_A = x"F0" else 
+				 "10000000" when RTC_A = x"0D" else 
+				 rtcr_do;
 	
 	-- fifo for write commands to send them on avr side 
 	UFIFO: entity work.queue 

@@ -219,7 +219,7 @@ module zmem
   // wire [14:0] cache_a;
   // wire [7:0] ch_addr = {2'b0, cpu_addr[5:0]};
 
-  altdpram cache_data
+/*  altdpram cache_data
   (
     .inclock (clk),
     .outclock (clk),
@@ -240,7 +240,7 @@ module zmem
   defparam
     cache_data.indata_aclr = "OFF",
     cache_data.indata_reg = "INCLOCK",
-    cache_data.intended_device_family = "ACEX1K",
+    cache_data.intended_device_family = "Cyclone III",
     cache_data.lpm_type = "altdpram",
     cache_data.outdata_aclr = "OFF",
     cache_data.outdata_reg = "OUTCLOCK",
@@ -276,7 +276,7 @@ module zmem
   defparam
     cache_addr.indata_aclr = "OFF",
     cache_addr.indata_reg = "INCLOCK",
-    cache_addr.intended_device_family = "ACEX1K",
+    cache_addr.intended_device_family = "Cyclone III",
     cache_addr.lpm_type = "altdpram",
     cache_addr.outdata_aclr = "OFF",
     cache_addr.outdata_reg = "OUTCLOCK",
@@ -289,7 +289,27 @@ module zmem
     cache_addr.wraddress_aclr = "OFF",
     cache_addr.wraddress_reg = "INCLOCK",
     cache_addr.wrcontrol_aclr = "OFF",
-    cache_addr.wrcontrol_reg = "INCLOCK";
+    cache_addr.wrcontrol_reg = "INCLOCK";*/
+	 
+	 	cache_data cache_data (
+		 .clock (clk),     // -- CLK
+		 .rdaddress (ch_addr), // ADDR for RD 
+		 .wraddress (ch_addr), //WR
+		  //-----------------CACHE DATA -------------------------
+		 .wren (cpu_strobe), //c2 -strobe
+		 .data (cpu_rddata), //<=====
+		 .q (cache_d)        // ==> data from CACHE
+	);
+
+	cache_addr cache_addr (
+		 .clock (clk),    //---- CLK
+		 .rdaddress (ch_addr), //                      
+		 .wraddress (ch_addr), //WR
+		 //--------------arbiter.cpu_strobe <= curr_cpu && cpu_rnw_r;
+		 .q ({cache_v, cache_a}), // valid, addr from CACHE 
+		 .data ({!cache_inv, cpu_hi_addr}), //wrdata 
+		 .wren ((cpu_strobe || cache_inv))  //c2 -strobe
+	);
 
   // ROM chip
   assign csrom = rom_n_ram;

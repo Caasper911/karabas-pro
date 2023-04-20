@@ -105,17 +105,13 @@ end karabas_pro;
 
 architecture rtl of karabas_pro is
 
-signal areset       : std_logic;
-signal reset        : std_logic;
-signal loader_act   : std_logic;
-signal loader_reset : std_logic;
+signal areset       : std_logic := '0';
+signal reset        : std_logic := '0';
+signal loader_act   : std_logic := '1';
+signal loader_reset : std_logic := '0';
 
 signal clk_28       : std_logic;
-signal clk_14       : std_logic;
-signal clk_84       : std_logic;
 signal clk_8        : std_logic;
-signal clk_bus      : std_logic;
-signal clk_cpu      : std_logic;
 signal ena_div2     : std_logic := '0';
 signal ena_div4     : std_logic := '0';
 signal ena_div8     : std_logic := '0';
@@ -132,7 +128,9 @@ signal ram_wr_n     : std_logic := '1';
 
 signal rom_a_bus    : std_logic_vector(20 downto 0);
 signal rom_do_bus   : std_logic_vector(7 downto 0);
+signal rom2_do_bus   : std_logic_vector(7 downto 0);
 signal rom_rd_n     : std_logic := '1';
+signal rom_rddata   : std_logic_vector(7 downto 0);
 
 signal cpu_reset_n  : std_logic;
 signal cpu_clk      : std_logic;
@@ -144,9 +142,9 @@ signal cpu_iorq_n   : std_logic;
 signal cpu_wr_n     : std_logic;
 signal cpu_rd_n     : std_logic;
 signal cpu_int_n    : std_logic;
-signal cpu_inta_n   : std_logic;
 signal cpu_m1_n     : std_logic;
 signal cpu_rfsh_n   : std_logic;
+signal cpu_halt_n   : std_logic;
 signal cpu_ena      : std_logic;
 signal cpu_mult     : std_logic_vector(1 downto 0);
 signal cpu_mem_wr   : std_logic;
@@ -156,7 +154,7 @@ signal cpu_wait_n   : std_logic := '1';
 
 signal kb_do_bus    : std_logic_vector(5 downto 0);
 signal kb_scancode  : std_logic_vector(9 downto 0);
-signal kb_reset     : std_logic;
+signal kb_reset     : std_logic := '0';
 signal kb_wait      : std_logic;
 signal kb_magic     : std_logic;
 signal kb_turbo     : std_logic_vector(1 downto 0);
@@ -241,11 +239,11 @@ signal P0              : std_logic;
 signal fdd_cs_n        : std_logic := '1';
 
 -- ts related
-signal cpu_int_n_TS : std_logic;
 signal im2vect      : std_logic_vector(7 downto 0);
 signal turbo        : std_logic_vector(1 downto 0);
 signal regs_we      : std_logic;
 signal rst_n        : std_logic;
+signal rst          : std_logic;
 signal iordwr       : std_logic;
 signal iordwr_s     : std_logic;
 signal spi_mode     : std_logic;
@@ -254,8 +252,17 @@ signal dmawpdev     : std_logic_vector(1 downto 0);
 signal dma_wtp_req  : std_logic;
 signal dma_wtp_stb  : std_logic;
 signal mus_data     : std_logic_vector(7 downto 0);
-signal wait_n       : std_logic;
+signal wait_n       : std_logic := '1';
 signal int_start_wtp: std_logic;
+signal wait_start_gluclock : std_logic;
+signal wait_start_comport : std_logic;
+signal beeper_wr : std_logic;
+signal covox_wr : std_logic;
+signal wait_addr : std_logic_vector(7 downto 0);
+signal wait_write : std_logic_vector(7 downto 0);
+signal porthit : std_logic;
+signal external_port :std_logic;
+signal debug_rgb : std_logic_vector(8 downto 0);
 
 -- zsignal
 signal cpu_stall    : std_logic; -- zmem -> zclock
@@ -270,7 +277,6 @@ signal csvrom       : std_logic;
 signal curr_cpu     : std_logic;
 
 signal cacheconf    : std_logic_vector(3 downto 0);
-signal cache_en     : std_logic;
 
 signal req          : std_logic;
 signal rnw          : std_logic;
@@ -305,6 +311,7 @@ signal c2           : std_logic;
 signal c3           : std_logic;
 signal ay_clk       : std_logic;
 signal zclk         : std_logic;
+signal zclkn        : std_logic;
 signal zpos         : std_logic;
 signal zneg         : std_logic;
 signal dos_on     : std_logic;
@@ -458,6 +465,10 @@ signal spi_sclk     : std_logic;
 signal spi_mosi     : std_logic;
 signal csync_ts     : std_logic;
 signal hdmi_d1_sig  : std_logic;
+
+-- debug
+signal debug_mc146818a_wr		: std_logic;
+signal debug_mc146818a_do_bus		: std_logic_vector(7 downto 0);
 
 -------------------------------------------------------------------------------
 -- COMPONENTS TS Lab
@@ -1015,8 +1026,6 @@ port map (
     SND_DAT     => SND_DAT,
     
     CLK_28      => clk_28,
-    CLK_14      => clk_14,
-    CLK_84      => clk_84,
     CLK_8       => clk_8,
 
     RAM_A       => ram_a_bus,
@@ -1043,7 +1052,7 @@ port map (
     RTC_A       => rtc_a_bus,
     RTC_DI      => rtc_di_bus,
     RTC_DO      => rtc_do_bus,
-    RTC_NRD     => '1',
+    RTC_NRD     => rtc_rd_n,
     RTC_NWR     => rtc_wr_n,
 
     AUDIO_L     => audio_l,
@@ -1088,25 +1097,26 @@ port map (
 
      -- todo: implement statuses
     ICON_SD     => '0', -- TODO
-    ICON_CF     => hdd_active,
-    ICON_FDD    => not(fdd_cs_n) and (not(cpu_rd_n) or not(cpu_wr_n)),
+    ICON_CF     => '0', -- hdd_active,
+    ICON_FDD    => '0', -- not(fdd_cs_n) and (not(cpu_rd_n) or not(cpu_wr_n)),
      
     CPLD_DO     => cpld_do
 );
 
 -- Zilog Z80A CPU
-U2: entity work.T80a
+U2: entity work.T80pa
 port map (
     RESET_n     => cpu_reset_n,
-    CLK_n       => clk_cpu, -- not clk_cpu,
-    CEN         => '1',
+    CLK         => clk_28, 
+    CEN_p       => zpos,
+	 CEN_n       => zneg,
 
     A           => cpu_a_bus,
-    DIN         => cpu_di_bus,
-    DOUT        => cpu_do_bus,
+    DI          => cpu_di_bus,
+    DO          => cpu_do_bus,
 
     WAIT_n      => cpu_wait_n,
-    INT_n       => cpu_int_n_TS, --cpu_int_n,
+    INT_n       => cpu_int_n,
     NMI_n       => cpu_nmi_n,
     M1_n        => cpu_m1_n,
     MREQ_n      => cpu_mreq_n,
@@ -1114,31 +1124,42 @@ port map (
     RD_n        => cpu_rd_n,
     WR_n        => cpu_wr_n,
     RFSH_n      => cpu_rfsh_n,
-    HALT_n      => open,
+    HALT_n      => cpu_halt_n,
     BUSRQ_n     => '1',
-    BUSAK_n     => open
+    BUSAK_n     => open,
+	 OUT0        => '1', -- 0 = OUT(C),0, 1 = OUT(C),255
+	 DIRset      => '0',
+	 REG         => open
 );
 
 -- Zilog Z80A CPU
 U3: entity work.dram2sram
 port map (
-    CLK         => clk_bus,
+    CLK         => clk_28,
     C0          => c0,
     C1          => c1,
     C2          => c2,
     C3          => c3,
     REQ         => dram_req,
     RNW         => dram_rnw,
-    ADDR        => dram_addr(20 downto 0),
+    ADDR        => dram_addr,
     DI          => dram_wrdata,
     BSEL        => dram_bsel, -- bsel[0] - wrdata[7:0], bsel[1] - wrdata[15:8]
     DO          => dram_rddata,
+
+	 RADDR       => "00" & rompg & cpu_a_bus(13 downto 0),
+    CSROM       => csrom, -- and not romoe_n,
+	 RDO         => rom_rddata,
         
     RAM_A       => ram_a_bus,
     RAM_DI      => ram_do_bus,
     RAM_DO      => ram_di_bus,
     RAM_NWR     => ram_wr_n,
-    RAM_NRD     => ram_rd_n
+    RAM_NRD     => ram_rd_n,
+	 
+	 ROM_A 		 => rom_a_bus,
+	 ROM_DI 		 => rom_do_bus,
+	 ROM_NRD     => rom_rd_n
 );
 
 TS01: clock
@@ -1161,7 +1182,7 @@ port map (
     c0          => c0,
     c2          => c2,
     iorq_s      => iorq_s,
-	 zclk_out    => zclk,
+	 zclk_out    => zclkn,
     zpos        => zpos,
     zneg        => zneg,
 	 turbo       => turbo,
@@ -1169,8 +1190,10 @@ port map (
     vdos_off    => vdos_off,
     cpu_stall   => cpu_stall,
     ide_stall   => '0', -- ide_stall
-    external_port => '0' -- external_port
+    external_port => '0' --external_port
     );
+	 
+zclk <= not zclkn;
 	 
 TS03: zmem
 port map (
@@ -1179,7 +1202,7 @@ port map (
     c2          => c2,
     c3          => c3,
 
-    rst         => reset,             -- PLL locked
+    rst         => rst,             -- PLL locked
     zneg        => zneg,
     za          => cpu_a_bus,        -- from CPU
     zd_out      => dout_ram,        -- output to Z80 bus 8bit ==>
@@ -1290,8 +1313,8 @@ port map (
     vsync       => vsync_ts,
     csync       => open,
 
-    cfg_60hz    => not soft_sw(2), -- 0-60Hz, 1-48Hz 
-    vga_on      => not soft_sw(1), -- 1-31kHZ	 
+    cfg_60hz    => '1', -- not soft_sw(2), -- 0-60Hz, 1-48Hz 
+    vga_on      => '1', -- not soft_sw(1), -- 1-31kHZ	 
 	 
     border_wr   => border_wr,
     zborder_wr  => zborder_wr,
@@ -1381,6 +1404,8 @@ port map (
     mreq_n      => cpu_mreq_n,
     m1_n        => cpu_m1_n,
     rfsh_n      => cpu_rfsh_n,
+	 
+	 rst         => rst,
     rd_n        => cpu_rd_n,
     wr_n        => cpu_wr_n,
     m1          => m1,
@@ -1421,7 +1446,7 @@ port map (
     dataout     => ena_ports,
 	 
     a           => cpu_a_bus,
-    rst         => reset,
+    rst         => rst,
     opfetch     => opfetch,         -- from zsignals
     rd          => rd,
     wr          => wr,
@@ -1513,17 +1538,17 @@ port map (
     kj_in       => joy_do_bus(7 downto 0),
     tape_read   => TAPE_IN,
 
-    beeper_wr   => open,	 
-    covox_wr    => open,
+    beeper_wr   => beeper_wr,	 
+    covox_wr    => covox_wr,
 
-	 wait_addr   => gluclock_addr,
-    wait_start_gluclock => open,         -- begin wait from some ports
-    wait_start_comport  => open,
+	 wait_addr   => wait_addr,
+    wait_start_gluclock => wait_start_gluclock,         -- begin wait from some ports
+    wait_start_comport  => wait_start_comport,
     wait_read   => rtc_do_bus,
-    wait_write  => open,
+    wait_write  => wait_write,
 	 
-	 porthit     => open,        -- when internal port hit occurs, this is 1, else 0; used for iorq1_n iorq2_n on zxbus
-    external_port => open       -- asserts for AY and VG93 accesses    
+	 porthit     => porthit,        -- when internal port hit occurs, this is 1, else 0; used for iorq1_n iorq2_n on zxbus
+    external_port => external_port       -- asserts for AY and VG93 accesses    
 );
 
 TS09: dma
@@ -1571,7 +1596,7 @@ port map (
     clk              => clk_28,
 	 zpos             => zpos,
     res              => reset,
-    wait_n           => wait_n,
+    wait_n           => '1', --wait_n,
 
     im2vect          => im2vect,          --> CPU Din (2 downto 0);     
     intmask          => intmask,          --< ZPORT (7 downto 0);
@@ -1579,12 +1604,12 @@ port map (
     int_start_lin    => int_start_lin,    --< N2 VIDEO
     int_start_frm    => int_start_frm,    --< N1 VIDEO
     int_start_dma    => int_start_dma,    --< N3 DMA
-    int_start_wtp    => int_start_wtp,    --< N4 DMA
+    int_start_wtp    => '0', --nt_start_wtp,    --< N4 DMA
 	 
 	 vdos             => pre_vdos,
 	 
     intack           => intack,           --< zsignals  === (intack ? im2vect : 8'hFF)));
-    int_n            => cpu_int_n_TS
+    int_n            => cpu_int_n
 );
 
 TS11: spi
@@ -1608,7 +1633,7 @@ port map (
 -- TurboSound
 U12: entity work.turbosound
 port map (
-    I_CLK            => clk_bus,
+    I_CLK            => clk_28,
     I_ENA            => ena_div16,
     I_ADDR           => cpu_a_bus,
     I_DATA           => cpu_do_bus,
@@ -1633,7 +1658,7 @@ port map (
 U13: entity work.covox
 port map (
     I_RESET          => reset,
-    I_CLK            => clk_bus,
+    I_CLK            => clk_28,
     I_CS             => soft_sw(6),
     I_WR_N           => cpu_wr_n,-- 
     I_ADDR           => cpu_a_bus(7 downto 0),
@@ -1666,7 +1691,7 @@ end generate G_SAA1099;
 G_ZIFI: if enable_zifi generate
 U15: entity work.zifi 
 port map (
-    CLK              => clk_bus,
+    CLK              => clk_28,
     RESET            => reset,
     A                => cpu_a_bus,
     DI               => cpu_do_bus,
@@ -1680,6 +1705,44 @@ port map (
     UART_CTS         => UART_CTS
 );
 end generate G_ZIFI;
+
+U_ROM: entity work.rom 
+port map (
+	clock => clk_28,
+	address => cpu_a_bus(13 downto 0),
+	q => rom2_do_bus
+);
+
+U_DEBUG: entity work.mc146818a
+port map (
+	RESET			=> reset,
+	CLK			=> clk_28,
+	ENA			=> '1',
+	CS			=> '1',
+	KEYSCANCODE 		=> x"FF",
+	WR			=> debug_mc146818a_wr,
+	A			=> rtc_a_bus(7 downto 0),
+	DI			=> cpu_do_bus,
+	DO			=> debug_mc146818a_do_bus);
+	
+U_DEBUG_OSD: entity work.debug_osd 
+port map (
+		CLK	=> clk_28,
+		
+		RGB_I => vred(1) & vred(0) & vred(0) & vgrn(1) & vgrn(0) & vgrn(0) & vblu(1) & vblu(0) & vblu(0),
+		RGB_O => debug_rgb,
+
+		-- debug ports to display
+		PORT_1 => csrom & ena_ram & rompg & cpu_halt_n,
+		PORT_2 => areset & kb_reset & loader_reset & loader_act & sd_cs_n & spi_sck & spi_sdo & DATA0,
+		PORT_3 => rom_do_bus,
+		PORT_4 => dout_ram,
+		
+		EN 	 => '1',
+		
+		HCNT_I => video_hcnt(8 downto 0),
+		VCNT_I => video_vcnt(8 downto 0)
+);
     
 -------------------------------------------------------------------------------
 -- Global signals
@@ -1688,15 +1751,14 @@ reset <= areset or kb_reset or loader_reset or loader_act; -- hot reset
 rst_n <= not reset;
 cfg_floppy_swap <= soft_sw(10);
 
-cpu_reset_n <= not(reset) and not(loader_reset); -- CPU reset
-cpu_inta_n  <= cpu_iorq_n or cpu_m1_n;    -- INTA
-cpu_nmi_n   <= '0' when kb_magic = '1' and ((cpu_m1_n = '0' and cpu_mreq_n = '0' and cpu_a_bus(15 downto 14) /= "00")) else '1'; -- NMI
+cpu_reset_n <= not(reset); -- CPU reset
+cpu_nmi_n   <= '1'; --'0' when kb_magic = '1' and ((cpu_m1_n = '0' and cpu_mreq_n = '0' and cpu_a_bus(15 downto 14) /= "00")) else '1'; -- NMI
 cpu_wait_n  <= '1';
 wait_n <= '1';
 
-process (clk_bus)
+process (clk_28)
 begin
-    if clk_bus'event and clk_bus = '0' then
+    if clk_28'event and clk_28 = '0' then
         ena_cnt <= ena_cnt + 1;
     end if;
 end process;
@@ -1705,14 +1767,6 @@ ena_div2  <= ena_cnt(0);
 ena_div4  <= ena_cnt(1) and ena_cnt(0);
 ena_div8  <= ena_cnt(2) and ena_cnt(1) and ena_cnt(0);
 ena_div16 <= ena_cnt(3) and ena_cnt(2) and ena_cnt(1) and ena_cnt(0);
-
-clk_bus   <= clk_28;
-clk_cpu   <= zclk;
-
---clk_cpu <= '0' when kb_wait = '1' else 
---    clk_bus and ena_div2 when kb_turbo = "10" else 
---    clk_bus and ena_div4 when kb_turbo = "01" else 
---    clk_bus and ena_div8;
 
 -------------------------------------------------------------------------------
 -- SD_NCS, SD_NDET, SD_SCK, SD_MOSI, DATA0
@@ -1724,43 +1778,45 @@ sd_MOSI <= '1' when loader_act = '1' else spi_sdo;
 -- tsconf
 go_arbiter <= go;
 
-cpu_di_bus <=
-    rom_do_bus  when csrom = '1' else
+cpu_di_bus <= 
+    rom_rddata  when csrom = '1' and romoe_n = '0' else
 	 dout_ram    when ena_ram = '1' else 
-    im2vect     when intack = '1' else
-    rtc_do_bus  when (cpu_iorq_n = '0' and cpu_rd_n = '0' and port_bff7 = '1' and port_eff7_reg(7) = '1') else        -- MC146818A
-    ssg_cn0_bus when (cpu_iorq_n = '0' and cpu_rd_n = '0' and cpu_a_bus = X"FFFD" and ssg_sel = '0') else    -- TurboSound
-    ssg_cn1_bus when (cpu_iorq_n = '0' and cpu_rd_n = '0' and cpu_a_bus = X"FFFD" and ssg_sel = '1') else
-    ms_z(3 downto 0) & '1' & not ms_b(2) & not ms_b(0) & not ms_b(1) when (cpu_iorq_n = '0' and cpu_rd_n = '0' and cpu_a_bus = x"FADF")  else
-    ms_x when (cpu_iorq_n = '0' and cpu_rd_n = '0' and cpu_a_bus = x"FBDF")  else
-    ms_y when (cpu_iorq_n = '0' and cpu_rd_n = '0' and cpu_a_bus = x"FFDF") else
-    zifi_do_bus when zifi_oe_n = '0' else
+	 im2vect     when intack = '1' else	 
+	 debug_mc146818a_do_bus  when (cpu_iorq_n = '0' and cpu_rd_n = '0' and port_bff7 = '1' and port_eff7_reg(7) = '1') else        -- MC146818A
+--    rtc_do_bus  when (cpu_iorq_n = '0' and cpu_rd_n = '0' and port_bff7 = '1' and port_eff7_reg(7) = '1') else        -- MC146818A
+--    ssg_cn0_bus when (cpu_iorq_n = '0' and cpu_rd_n = '0' and cpu_a_bus = X"FFFD" and ssg_sel = '0') else    -- TurboSound
+--    ssg_cn1_bus when (cpu_iorq_n = '0' and cpu_rd_n = '0' and cpu_a_bus = X"FFFD" and ssg_sel = '1') else
+--    ms_z(3 downto 0) & '1' & not ms_b(2) & not ms_b(0) & not ms_b(1) when (cpu_iorq_n = '0' and cpu_rd_n = '0' and cpu_a_bus = x"FADF")  else
+--    ms_x when (cpu_iorq_n = '0' and cpu_rd_n = '0' and cpu_a_bus = x"FBDF")  else
+--    ms_y when (cpu_iorq_n = '0' and cpu_rd_n = '0' and cpu_a_bus = x"FFDF") else
+--    zifi_do_bus when zifi_oe_n = '0' else
     dout_ports when ena_ports = '1' else
-    cpld_do when cpu_iorq_n = '0' and cpu_rd_n = '0' and cpu_m1_n = '1' else -- HDD / FDD
+--    cpld_do when cpu_iorq_n = '0' and cpu_rd_n = '0' and cpu_m1_n = '1' else -- HDD / FDD
     "11111111";
 
-process (reset, clk_bus)
+process (reset, clk_28)
 begin
     if reset = '1' then
         port_xxfe_reg <= "00000000";
         port_eff7_reg <= "00000000";
-    elsif clk_bus'event and clk_bus = '1' then
+    elsif clk_28'event and clk_28 = '1' then
         if cpu_iorq_n = '0' and cpu_wr_n = '0' and cpu_a_bus(7 downto 0) = "11111110" then port_xxfe_reg <= cpu_do_bus; end if;
         if cpu_iorq_n = '0' and cpu_wr_n = '0' and cpu_a_bus = "1110111111110111" then port_eff7_reg <= cpu_do_bus; end if; --for RTC
     end if;    
 end process;
 
-rtc_a_bus  <= gluclock_addr(7 downto 0);
+rtc_a_bus  <= wait_addr;
 rtc_di_bus <= cpu_do_bus;
-rtc_wr_n   <= '0' when (port_bff7 = '1' and cpu_wr_n = '0') else '1';
+debug_mc146818a_wr <= '1' when (port_bff7 = '1' and cpu_wr_n = '0') else '0';
+rtc_wr_n   <= wait_start_gluclock and not (cpu_wr_n); -- '0' when (port_bff7 = '1' and cpu_wr_n = '0') else '1';
 rtc_rd_n   <= '0' when (port_bff7 = '1' and cpu_rd_n = '0') else '1';
 port_bff7  <= '1' when (cpu_iorq_n = '0' and cpu_a_bus = X"BFF7" and cpu_m1_n = '1' and port_eff7_reg(7) = '1') else '0';
 
-rom_a_bus  <= "00" & rompg & cpu_a_bus(13 downto 0);
-rom_rd_n   <= '0' when csrom = '1' and romoe_n = '0' else '1';
+--rom_a_bus  <= "00" & rompg & cpu_a_bus(13 downto 0);
+--rom_rd_n   <= '0' when csrom = '1' and romoe_n = '0' else '1';
+--rom_rd_n   <= '0' when csrom = '1' and c2='1' else '1';
                 
 turbo      <= sysconf(1 downto 0); 
-cache_en   <= sysconf(2);
 
 speaker    <= port_xxfe_reg(4);
 tape_in_monitor <= TAPE_IN;
@@ -1832,9 +1888,17 @@ audio_r <= "0000000000000000" when loader_act = '1' or kb_wait = '1' else
                 ("000"  & saa_out_r &     "00000");
 
 -- mixed lower bits 555 -> 333
-video_r  <= vred(1) & vred(0) & vred(0);
-video_g  <= vgrn(1) & vgrn(0) & vgrn(0);
-video_b  <= vblu(1) & vblu(0) & vblu(0);
+--video_r  <= vred(1) & vred(0) & vred(0);
+--video_g  <= vgrn(1) & vgrn(0) & vgrn(0);
+--video_b  <= vblu(1) & vblu(0) & vblu(0);
+
+--video_r <= vred_raw(4) & (vred_raw(3) or vred_raw(2)) & (vred_raw(1) or vred_raw(0));
+--video_g <= vgrn_raw(4) & (vgrn_raw(3) or vgrn_raw(2)) & (vgrn_raw(1) or vgrn_raw(0));
+--video_b <= vblu_raw(4) & (vblu_raw(3) or vblu_raw(2)) & (vblu_raw(1) or vblu_raw(0));
+
+video_r <= debug_rgb(8 downto 6);
+video_g <= debug_rgb(5 downto 3);
+video_b <= debug_rgb(2 downto 0);
 
 video_hs <= hsync_ts;
 video_vs <= vsync_ts;

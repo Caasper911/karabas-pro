@@ -350,9 +350,27 @@ module video_ts
       sprites_xf <= s_xflp;
     end
   end
+  
+  video_sfile video_sfile(
+		.clock		(!clk),
+		.wraddress	(sfile_addr_in),
+		.data			(sfile_data_in),
+		.wren			(sfile_we),
+		.rdaddress	(sreg),
+		.q				(sfile_rdata)
+  );
+  
+  video_tmbuf video_tmbuf(
+	  .clock      (!clk),
+	  .data       (dram_rdata),
+	  .wraddress  (tmb_waddr),
+	  .wren       (tm_next),
+	  .rdaddress  (tmb_raddr),
+	  .q          (tmb_rdata)
+  );
 
   // SFile
-  altdpram video_sfile
+/*  altdpram video_sfile
   (
     .outclock       (clk),
     .wren           (sfile_we),
@@ -373,7 +391,7 @@ module video_ts
   defparam
     video_sfile.indata_aclr = "OFF",
     video_sfile.indata_reg = "INCLOCK",
-    video_sfile.intended_device_family = "ACEX1K",
+    video_sfile.intended_device_family = "Cyclone III",
     video_sfile.lpm_type = "altdpram",
     video_sfile.outdata_aclr = "OFF",
     video_sfile.outdata_reg = "OUTCLOCK",
@@ -411,7 +429,7 @@ module video_ts
   defparam
     video_tmbuf.indata_aclr = "OFF",
     video_tmbuf.indata_reg = "INCLOCK",
-    video_tmbuf.intended_device_family = "ACEX1K",
+    video_tmbuf.intended_device_family = "Cyclone III",
     video_tmbuf.lpm_type = "altdpram",
     video_tmbuf.outdata_aclr = "OFF",
     video_tmbuf.outdata_reg = "OUTCLOCK",
@@ -425,6 +443,7 @@ module video_ts
     video_tmbuf.wraddress_reg = "INCLOCK",
     video_tmbuf.wrcontrol_aclr = "OFF",
     video_tmbuf.wrcontrol_reg = "INCLOCK";
+	 */
 
   // TS renderer interface
   assign tsr_go = sprite_go || tile_go;

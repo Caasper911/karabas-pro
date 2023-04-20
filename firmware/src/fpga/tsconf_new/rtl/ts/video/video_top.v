@@ -512,7 +512,7 @@ module video_top
   );
 
   // 2 buffers: 512 pixels * 8 bits (9x8) - used as bitmap buffer for TS overlay over graphics
-  altdpram video_tsline0
+  /*altdpram video_tsline0
   (
     .inclock        (clk),
     .wren           (ts_we0),
@@ -533,7 +533,7 @@ module video_top
   defparam
     video_tsline0.indata_aclr = "OFF",
     video_tsline0.indata_reg = "INCLOCK",
-    video_tsline0.intended_device_family = "ACEX1K",
+    video_tsline0.intended_device_family = "Cyclone III",
     video_tsline0.lpm_type = "altdpram",
     video_tsline0.outdata_aclr = "OFF",
     video_tsline0.outdata_reg = "UNREGISTERED",
@@ -569,7 +569,7 @@ module video_top
   defparam
     video_tsline1.indata_aclr = "OFF",
     video_tsline1.indata_reg = "INCLOCK",
-    video_tsline1.intended_device_family = "ACEX1K",
+    video_tsline1.intended_device_family = "Cyclone III",
     video_tsline1.lpm_type = "altdpram",
     video_tsline1.outdata_aclr = "OFF",
     video_tsline1.outdata_reg = "UNREGISTERED",
@@ -606,7 +606,7 @@ module video_top
   defparam
     video_vmem.indata_aclr = "OFF",
     video_vmem.indata_reg = "INCLOCK",
-    video_vmem.intended_device_family = "ACEX1K",
+    video_vmem.intended_device_family = "Cyclone III",
     video_vmem.lpm_type = "altdpram",
     video_vmem.outdata_aclr = "OFF",
     video_vmem.outdata_reg = "OUTCLOCK",
@@ -619,6 +619,36 @@ module video_top
     video_vmem.wraddress_aclr = "OFF",
     video_vmem.wraddress_reg = "INCLOCK",
     video_vmem.wrcontrol_aclr = "OFF",
-    video_vmem.wrcontrol_reg = "INCLOCK";
+    video_vmem.wrcontrol_reg = "INCLOCK";*/
+	 
+	 video_tsline0 video_tsline0 (
+        .clock      (clk),
+        .wraddress  (ts_waddr0),
+        .data       (ts_wdata0),
+        .wren       (ts_we0),
+        .rdaddress  (ts_raddr),
+        .q          (ts_rdata0)
+);
+    video_tsline1 video_tsline1 (
+        .clock      (clk),
+        .wraddress  (ts_waddr1),
+        .data       (ts_wdata1),
+        .wren       (ts_we1),
+        .rdaddress  (ts_raddr),
+        .q          (ts_rdata1)
+);
+
+
+// 2 lines * 512 pix * 8 bit (10x8) - used for VGA doubler
+// (1 altdpram)
+	video_vmem video_vmem(
+		.clock		(clk),
+		.wraddress	(vga_cnt_in),
+		.data			(vplex),
+		.wren			(c3),
+	   .rdaddress	(vga_cnt_out),
+	   .q				(vgaplex)
+);
+
 
 endmodule

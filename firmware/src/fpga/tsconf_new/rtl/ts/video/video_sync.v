@@ -140,7 +140,7 @@ module video_sync
   assign vga_blank = vga_hblank || vga_vblank;
   assign tv_blank = tv_hblank || tv_vblank;
   
-  assign osd_hcnt = hcount;
+  assign osd_hcnt = cnt_out;
   assign osd_vcnt = vcount;
   assign osd_paper = hvpix;
 

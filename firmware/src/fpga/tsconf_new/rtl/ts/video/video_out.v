@@ -132,7 +132,7 @@ module video_out
   assign pwm[7] = 8'b11011111;
 
 // CRAM
-  altdpram video_cram
+/*  altdpram video_cram
   (
     .inclock        (clk),
     .data           (cram_data_in),
@@ -153,7 +153,7 @@ module video_out
   defparam
     video_cram.indata_aclr = "OFF",
     video_cram.indata_reg = "INCLOCK",
-    video_cram.intended_device_family = "ACEX1K",
+    video_cram.intended_device_family = "Cyclone III",
     video_cram.lpm_file = "../video/mem/video_cram.mif",
     video_cram.lpm_type = "altdpram",
     video_cram.outdata_aclr = "OFF",
@@ -167,6 +167,16 @@ module video_out
     video_cram.wraddress_aclr = "OFF",
     video_cram.wraddress_reg = "INCLOCK",
     video_cram.wrcontrol_aclr = "OFF",
-    video_cram.wrcontrol_reg = "INCLOCK";
+    video_cram.wrcontrol_reg = "INCLOCK";*/
+	 
+	 	video_cram video_cram(
+		.clock		(clk),
+		.wraddress	(cram_addr_in),
+		.data		(cram_data_in),
+		.wren		(cram_we),
+		.rdaddress	(vdata), //-<INPUT
+		.q		(vpixel)
+	);
+
 
 endmodule

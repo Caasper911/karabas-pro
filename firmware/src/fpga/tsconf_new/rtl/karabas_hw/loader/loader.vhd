@@ -33,9 +33,9 @@ port (
 	RESET 			: in std_logic;
 	
 	-- RAM interface
-	RAM_A 			: out std_logic_vector(20 downto 0);
-	RAM_DO 			: out std_logic_vector(7 downto 0);
-	RAM_WR			: out std_logic;
+	RAM_A 			: buffer std_logic_vector(20 downto 0);
+	RAM_DO 			: buffer std_logic_vector(7 downto 0);
+	RAM_WR			: buffer std_logic;
 	
 	-- Config byte 
 	CFG 				: out std_logic_vector(7 downto 0) := "00000010";

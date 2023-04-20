@@ -5,7 +5,8 @@ use IEEE.numeric_std.all;
 
 entity karabas_hw is
     generic (
-        enable_osd_overlay : boolean := true  -- osd overlay (enabled by default)
+        enable_osd_overlay : boolean := true;  -- osd overlay (enabled by default)
+		  enable_osd_icons   : boolean := false
     );
 port (
     -- Clock (50MHz)
@@ -116,14 +117,14 @@ port (
     VIDEO_BLINK : in std_logic;
 
     -- Misc interface
-    ARESET      : buffer std_logic;
-    KB_RESET    : buffer std_logic;
-    KB_WAIT     : out std_logic;
-    KB_MAGIC    : out std_logic;
-    KB_TURBO    : out std_logic_vector(1 downto 0);
-    KB_LOADED   : out std_logic;
-    LOADER_ACT  : buffer std_logic;
-    LOADER_RESET: buffer std_logic;
+    ARESET      : buffer std_logic := '0';
+    KB_RESET    : buffer std_logic := '0';
+    KB_WAIT     : out std_logic := '0';
+    KB_MAGIC    : out std_logic := '0';
+    KB_TURBO    : out std_logic_vector(1 downto 0) := "00";
+    KB_LOADED   : out std_logic := '0';
+    LOADER_ACT  : buffer std_logic := '1';
+    LOADER_RESET: buffer std_logic := '0';
     SOFT_SW     : buffer std_logic_vector(1 to 10);
      
      -- Bus interface (HDD/FDD)
@@ -164,6 +165,7 @@ signal osd_popup        : std_logic := '0';
 signal osd_command      : std_logic_vector(15 downto 0);
 
 -- CLOCK
+signal locked           : std_logic := '0';
 signal clk84            : std_logic := '0';
 signal clk28            : std_logic := '0';
 signal clk8             : std_logic := '0';
@@ -193,10 +195,8 @@ signal flash_rdy        : std_logic := '0';
 
 -- SPI flash / SD
 signal flash_clk        : std_logic;
-signal flash_do         : std_logic;
 
 signal vid_rgb_osd      : std_logic_vector(8 downto 0);
-signal vid_scandoubler_enable : std_logic := '0';
 
 begin
 
@@ -204,10 +204,10 @@ begin
 U01: entity work.altpll0
 port map (
     inclk0        => CLK_50MHZ, -- 50Mhz
-    locked        => open,
-    c0            => clk84,
-    c1            => clk28,
-    c2            => clk8
+    locked        => locked,
+    c0            => clk28,
+    c1            => clk8,
+    c2            => clk84
 );
 
 -- SPI flash parallel interface
@@ -234,9 +234,6 @@ port map(
 
 -- Loader
 U03: entity work.loader
-generic map(
-    SIZE_TO_READ  => 524288
-)
 port map(
     CLK           => clk_bus,
     RESET         => areset,
@@ -294,6 +291,9 @@ port map (
 -- osd overlay
 G_OVERLAY: if enable_osd_overlay generate
 U05: entity work.overlay
+generic map (
+	enable_osd_icons => enable_osd_icons
+)
 port map (
     CLK           => clk_bus,
     CLK2          => clk_div2,
@@ -331,7 +331,7 @@ end generate G_NO_OVERLAY;
 --    SSI_IN        => VIDEO_HS,
 --    CLK           => clk_div2,
 --    CLK2          => clk_bus,
---    EN            => vid_scandoubler_enable,
+--    EN            => '1', --not(soft_sw(1));
 --    RGB_O(8 downto 6)    => VGA_R,
 --    RGB_O(5 downto 3)    => VGA_G,
 --    RGB_O(2 downto 0)    => VGA_B,
@@ -409,7 +409,7 @@ port map (
 U08: entity work.tda1543
 port map (
     RESET         => areset,
-    CLK_BUS       => clk_bus,
+    CLK_BUS       => clk8,
     DAC_TYPE      => cfg(0), -- 0 = TDA1543, 1 = TDA1543A
     CS            => '1',
     DATA_L        => AUDIO_L,
@@ -457,10 +457,10 @@ CLK_28 <= clk28;
 CLK_14 <= clk_div2;
 CLK_84 <= clk84;
 CLK_8  <= clk8;
-vid_scandoubler_enable <= '0'; --not(soft_sw(1));
 
 SPI_SCK <= flash_clk when loader_act = '1' else SD_SCK;
-reset <= kb_reset or loader_reset or loader_act;
+reset <= areset or kb_reset or loader_reset or loader_act;
+--areset <= locked;
 
 process (clk_bus)
 begin 

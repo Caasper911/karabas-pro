@@ -4,6 +4,9 @@ use IEEE.numeric_std.ALL;
 use IEEE.std_logic_unsigned.all;
 
 entity overlay is
+generic (
+		  enable_osd_icons   : boolean := false
+    );
 	port (
 		CLK		: in std_logic;
 		CLK2 		: in std_logic;
@@ -85,8 +88,9 @@ architecture rtl of overlay is
 	 
 	 constant paper_start_h : natural := 0;
 	 constant paper_end_h : natural := 256;
-	 constant paper_start_v : natural := 0;
-	 constant paper_end_v : natural := 192;
+	 constant paper_offset_v : natural := 128;
+	 constant paper_start_v : natural := 0 + paper_offset_v;
+	 constant paper_end_v : natural := 192 + paper_offset_v;
 begin
 
 	 -- знакогенератор
@@ -98,6 +102,7 @@ begin
     );
 
 	 -- иконки
+	 G_ICONS: if enable_osd_icons generate 
 	 U_ICONS: entity work.icons
     port map (
 		CLK		=> CLK,
@@ -112,12 +117,17 @@ begin
 		STATUS_FD => STATUS_FD,
 		OSD_ICONS => OSD_ICONS
     );
+	 end generate G_ICONS;
+	 
+	 G_NOICONS: if not enable_osd_icons generate 
+		rgb <= RGB_I;
+	 end generate G_NOICONS;
 
 	 -- видеопамять OSD
     U_VRAM: screen1 
     port map (
         data    => vram_di,
-        rdaddress => addr_read,
+        rdaddress => addr_read - paper_offset_v*32,
         rdclock   => CLK2,
         wraddress => addr_write,
         wrclock   => CLK,
