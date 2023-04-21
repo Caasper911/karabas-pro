@@ -1,6 +1,7 @@
 // This module serves direct DRAM-to-device data transfer
 
 //`include "tune.v"
+`timescale 1ns/100ps
 
 module dma
 (
@@ -24,7 +25,7 @@ module dma
   input  wire [7:0] zdata,
 
   // DRAM interface
-  output wire [20:0] dram_addr,
+  output wire [21:0] dram_addr,
   input  wire [15:0] dram_rddata,
   output wire [15:0] dram_wrdata,
   output wire dram_req,
@@ -397,7 +398,7 @@ module dma
   assign wraddr = d_addr[7:0];
 
   // DRAM
-  assign dram_addr = state_rd ? ((!dv_blt || !phase_blt) ? s_addr : d_addr) : d_addr;
+  assign dram_addr = state_rd ? ((!dv_blt || !phase_blt) ? {1'b0, s_addr} : {1'b0, d_addr}) : {1'b0, d_addr};
   assign dram_wrdata = data;
   assign dram_req = dma_act && state_mem;
   assign dram_rnw = state_rd;

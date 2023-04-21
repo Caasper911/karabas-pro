@@ -1,6 +1,7 @@
 // This module decodes video modes
 
 //`include "tune.v"
+`timescale 1ns/100ps
 
 module video_mode
 (

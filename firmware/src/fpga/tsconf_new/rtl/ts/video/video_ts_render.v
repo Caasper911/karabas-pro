@@ -1,4 +1,5 @@
 //`include "tune.v"
+`timescale 1ns/100ps
 
 // This module renders pixels into TS-line for tiles/sprites
 // Task execution is initiated by 'tsr_go' (one 'clk' period strobe).

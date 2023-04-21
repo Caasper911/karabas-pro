@@ -1,4 +1,5 @@
 //`include "tune.v"
+`timescale 1ns/100ps
 
 // PentEvo project (c) NedoPC 2008-2011
 //
@@ -57,7 +58,7 @@ module arbiter
   input  wire        c3,
 
   // dram.v interface
-  output wire [20:0] dram_addr,       // address for dram access
+  output wire [21:0] dram_addr,       // address for dram access
   output wire        dram_req,        // dram request
   output wire        dram_rnw,        // Read-NotWrite
   output wire [ 1:0] dram_bsel,       // byte select: bsel[1] for wrdata[15:8], bsel[0] for wrdata[7:0]
@@ -74,7 +75,7 @@ module arbiter
   output wire        next_vid,        // used for TM prefetch
 
   // CPU
-  input  wire [20:0] cpu_addr,
+  input  wire [21:0] cpu_addr,
   input  wire [ 7:0] cpu_wrdata,
   input  wire        cpu_req,
   input  wire        cpu_rnw,
@@ -197,11 +198,11 @@ module arbiter
   assign dram_bsel[1:0] = next_dma ? 2'b11 : {cpu_wrbsel, ~cpu_wrbsel};
   assign dram_req = |next_cycle;
   assign dram_rnw = next_cpu ? cpu_rnw : (next_dma ? dma_rnw : 1'b1);
-  assign dram_addr = {21{next_cpu}} & cpu_addr
-                   | {21{next_vid}} & video_addr
-                   | {21{next_ts}}  & ts_addr
-                   | {21{next_tm}}  & tm_addr
-                   | {21{next_dma}} & dma_addr;
+  assign dram_addr = {22{next_cpu}} & cpu_addr
+                   | {22{next_vid}} & 1'b0 & video_addr
+                   | {22{next_ts}}  & 1'b0 & ts_addr
+                   | {22{next_tm}}  & 1'b0 & tm_addr
+                   | {22{next_dma}} & 1'b0 & dma_addr;
 
   reg cpu_rnw_r;
   always @(posedge clk) if (c3)

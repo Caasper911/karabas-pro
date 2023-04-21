@@ -1,4 +1,5 @@
 //`include "tune.v"
+`timescale 1ns/100ps
 
 // This module generates video raster signals
 

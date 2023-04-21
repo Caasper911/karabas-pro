@@ -3,6 +3,7 @@
 // (c)2015 TSL
 
 //`include "tune.v"
+`timescale 1ns/100ps
 
 module video_out
 (

@@ -199,6 +199,12 @@ set_parameter -name build_version 00000000
 
 
 
+set_global_assignment -name VHDL_FILE ../../rtl/T80/T80pa.vhd
+set_global_assignment -name VHDL_FILE ../../rtl/T80/T80_Reg.vhd
+set_global_assignment -name VHDL_FILE ../../rtl/T80/T80_Pack.vhd
+set_global_assignment -name VHDL_FILE ../../rtl/T80/T80_MCode.vhd
+set_global_assignment -name VHDL_FILE ../../rtl/T80/T80_ALU.vhd
+set_global_assignment -name VHDL_FILE ../../rtl/T80/T80.vhd
 set_global_assignment -name VHDL_FILE ../../rtl/debug_osd.vhd
 set_global_assignment -name VHDL_FILE ../../rtl/rtc/mc146818a.vhd
 set_global_assignment -name VHDL_FILE ../../rtl/rtc/CMOS.vhd
@@ -210,12 +216,6 @@ set_global_assignment -name VERILOG_FILE ../../rtl/ts/video/mem/video_tsline0.v
 set_global_assignment -name VERILOG_FILE ../../rtl/ts/video/mem/video_tmbuf.v
 set_global_assignment -name VERILOG_FILE ../../rtl/ts/video/mem/video_sfile.v
 set_global_assignment -name VERILOG_FILE ../../rtl/ts/video/mem/video_cram.v
-set_global_assignment -name VHDL_FILE ../../rtl/T80/T80_Pack.vhd
-set_global_assignment -name VHDL_FILE ../../rtl/T80/T80_Reg.vhd
-set_global_assignment -name VHDL_FILE ../../rtl/T80/T80_MCode.vhd
-set_global_assignment -name VHDL_FILE ../../rtl/T80/T80_ALU.vhd
-set_global_assignment -name VHDL_FILE ../../rtl/T80/T80.vhd
-set_global_assignment -name VHDL_FILE ../../rtl/T80/T80pa.vhd
 set_global_assignment -name VHDL_FILE ../../rtl/karabas_pro.vhd
 set_global_assignment -name VHDL_FILE ../../rtl/karabas_hw/karabas_hw.vhd
 set_global_assignment -name QIP_FILE ../../rtl/karabas_hw/pll/altpll0.qip

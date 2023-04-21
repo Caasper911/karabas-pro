@@ -1,4 +1,5 @@
 //`include "tune.v"
+`timescale 1ns/100ps
 
 // PentEvo project (c) NedoPC 2008-2009
 //
@@ -53,7 +54,7 @@ module zmem
 
 // DRAM
   output wire        cpu_req,
-  output wire [20:0] cpu_addr,
+  output wire [21:0] cpu_addr,
   output wire        cpu_wrbsel,
   input  wire [15:0] cpu_rddata,
   input  wire        cpu_next,
@@ -117,15 +118,19 @@ module zmem
 
   // RAM
   wire cache_hit_en;
-  assign zd_ena = !rom_n_ram && memrd;
-  wire ramreq = !rom_n_ram && ((memrd && !cache_hit_en) || (memwr && ramwr_en));
+  //assign zd_ena = !rom_n_ram && memrd;
+  //wire ramreq = !rom_n_ram && ((memrd && !cache_hit_en) || (memwr && ramwr_en));
+  // ram+rom 
+  assign zd_ena = memrd;
+  wire ramreq = ((memrd && !cache_hit_en) || (memwr && ramwr_en));
+  
 
 // address, data in and data out
   wire [15:0] cache_d;
   wire cache_v;
 
   assign cpu_wrbsel = za[0];
-  assign cpu_addr[20:0] = {page, za[13:1]};
+  assign cpu_addr[21:0] = rom_n_ram ? {1'b1, xtpage[0][4:0], za[13:1]} : {1'b0, page, za[13:1]};
   wire [15:0] mem_d = cpu_latch ? cpu_rddata : cache_d;
   assign zd_out = ~cpu_wrbsel ? mem_d[7:0] : mem_d[15:8];
 
@@ -212,8 +217,9 @@ module zmem
   // wire cache_hit = (ch_addr[7:2] != 6'b011100) && (cpu_hi_addr == cache_a) && cache_v;  // debug for BM
   wire cache_hit = (cpu_hi_addr == cache_a) && cache_v;  // asynchronous signal meaning that address requested by CPU is cached and valid
   assign cache_hit_en = cache_hit && cache_en[win];
-  wire cache_inv = cache_hit && !rom_n_ram && memwr_s && ramwr_en;    // cache invalidation should be only performed if write happens to cached address
-
+  //wire cache_inv = cache_hit && !rom_n_ram && memwr_s && ramwr_en;    // cache invalidation should be only performed if write happens to cached address
+  wire cache_inv = cache_hit && memwr_s && ramwr_en;
+  
   wire [7:0] ch_addr = cpu_addr[7:0];
   // wire [14:0] cpu_hi_addr = {page[7:0], za[13:7]};
   // wire [14:0] cache_a;

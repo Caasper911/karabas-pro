@@ -2,6 +2,7 @@
 // This module maps z80 memory accesses into FPGA RAM and ports
 
 //`include "tune.v"
+`timescale 1ns/100ps
 
 module zmaps
 (

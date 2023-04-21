@@ -1,5 +1,6 @@
 
 //`include "tune.v"
+`timescale 1ns/100ps
 
 module zint
 (

@@ -2,6 +2,7 @@
 // PentEvo project (c) NedoPC 2008-2010
 
 //`include "tune.v"
+`timescale 1ns/100ps
 
 module zports
 (

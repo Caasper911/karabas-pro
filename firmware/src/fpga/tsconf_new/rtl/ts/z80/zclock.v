@@ -22,6 +22,7 @@
 // 3. clock switch 14-7-3.5 only at RFSH
 
 //`include "tune.v"
+`timescale 1ns/100ps
 
 module zclock
 (

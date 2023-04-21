@@ -1,6 +1,7 @@
 // This module renders video data for output
 
 //`include "tune.v"
+`timescale 1ns/100ps
 
 module video_render
 (

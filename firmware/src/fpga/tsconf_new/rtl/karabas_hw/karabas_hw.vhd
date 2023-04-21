@@ -62,18 +62,14 @@ port (
     CLK_14      : out std_logic;
     CLK_84      : out std_logic;
     CLK_8       : out std_logic;
+	 CLK_56      : out std_logic;
 
-    -- RAM 4MB interface
-    RAM_A       : in std_logic_vector(21 downto 0);
+    -- RAM 4MB interface + 2MB ROM as RAM_A(22) = '1'
+    RAM_A       : in std_logic_vector(22 downto 0);
     RAM_DI      : in std_logic_vector(7 downto 0);
     RAM_DO      : out std_logic_vector(7 downto 0);
     RAM_NRD     : in std_logic := '1';
     RAM_NWR     : in std_logic := '1';
-
-    -- ROM 2MB interface
-    ROM_A       : in std_logic_vector(20 downto 0);
-    ROM_DO      : out std_logic_vector(7 downto 0);
-    ROM_NRD     : in std_logic := '1';
 
     -- KB interface
     KB_A        : in std_logic_vector(15 downto 8);
@@ -166,6 +162,7 @@ signal osd_command      : std_logic_vector(15 downto 0);
 
 -- CLOCK
 signal locked           : std_logic := '0';
+signal clk56            : std_logic := '0';
 signal clk84            : std_logic := '0';
 signal clk28            : std_logic := '0';
 signal clk8             : std_logic := '0';
@@ -207,7 +204,8 @@ port map (
     locked        => locked,
     c0            => clk28,
     c1            => clk8,
-    c2            => clk84
+    c2            => clk84,
+	 c3            => clk56
 );
 
 -- SPI flash parallel interface
@@ -258,7 +256,7 @@ port map(
 U04: entity work.memory 
 port map ( 
     -- clock
-    CLK           => clk_bus,
+    CLK           => clk28,
     
     -- loader signals
     LOADER_ACT    => loader_act,
@@ -280,12 +278,7 @@ port map (
     RAM_DI        => RAM_DI, 
     RAM_DO        => RAM_DO,
     RAM_NRD       => RAM_NRD,
-    RAM_NWR       => RAM_NWR,
-
-    -- interface rom
-    ROM_A         => ROM_A,
-    ROM_DO        => ROM_DO,
-    ROM_NRD       => ROM_NRD
+    RAM_NWR       => RAM_NWR
 );    
 
 -- osd overlay
@@ -457,6 +450,7 @@ CLK_28 <= clk28;
 CLK_14 <= clk_div2;
 CLK_84 <= clk84;
 CLK_8  <= clk8;
+CLK_56 <= clk56;
 
 SPI_SCK <= flash_clk when loader_act = '1' else SD_SCK;
 reset <= areset or kb_reset or loader_reset or loader_act;

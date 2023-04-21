@@ -1,4 +1,5 @@
 //`include "tune.v"
+`timescale 1ns/100ps
 
 // This is the Tile Sprite Processing Unit
 
@@ -352,7 +353,7 @@ module video_ts
   end
   
   video_sfile video_sfile(
-		.clock		(!clk),
+		.clock		(!clk), // !clk ?
 		.wraddress	(sfile_addr_in),
 		.data			(sfile_data_in),
 		.wren			(sfile_we),
@@ -361,7 +362,7 @@ module video_ts
   );
   
   video_tmbuf video_tmbuf(
-	  .clock      (!clk),
+	  .clock      (!clk), // !clk ?
 	  .data       (dram_rdata),
 	  .wraddress  (tmb_waddr),
 	  .wren       (tm_next),

@@ -1,6 +1,7 @@
 // This module fetches video data from DRAM
 
 //`include "tune.v"
+`timescale 1ns/100ps
 
 module video_fetch
 (

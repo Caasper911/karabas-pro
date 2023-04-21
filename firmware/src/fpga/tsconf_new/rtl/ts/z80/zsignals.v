@@ -2,6 +2,7 @@
 // Decoding and strobing of z80 signals
 
 //`include "tune.v"
+`timescale 1ns/100ps
 
 module zsignals
 (
