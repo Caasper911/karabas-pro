@@ -38,14 +38,18 @@ end memory;
 
 architecture RTL of memory is
 
+signal is_rom: std_logic;
+
 begin
 	
 		N_MRD <= '1' when LOADER_ACT = '1' else RAM_NRD;
 		N_MWR <= not LOADER_WR when loader_act = '1' else RAM_NWR;
-
-		N_CE1 <= '1' when LOADER_ACT = '1' else RAM_A(21) when (RAM_NRD = '0' or RAM_NWR = '0') and RAM_A(22) = '0' else '1';
-		N_CE2 <= '1' when LOADER_ACT = '1' else not(RAM_A(21)) when (RAM_NRD = '0' or RAM_NWR = '0') and RAM_A(22) = '0' else '1';
-		N_CE3 <= '0' when LOADER_ACT = '1' else '0' when RAM_NRD = '0' and RAM_A(22) = '1' else '1';
+		
+		is_rom <= RAM_A(22);
+		
+		N_CE1 <= '1' when LOADER_ACT = '1' else RAM_A(21) when is_rom = '0' else '1';
+		N_CE2 <= '1' when LOADER_ACT = '1' else not(RAM_A(21)) when is_rom = '0' else '1';
+		N_CE3 <= '0' when LOADER_ACT = '1' else '0' when is_rom = '1' else '1';
 		
       MA <= LOADER_A when LOADER_ACT = '1' else 
 				RAM_A(20 downto 0);
@@ -53,7 +57,7 @@ begin
 		MD <= LOADER_D when LOADER_ACT = '1' else 
 			   RAM_DI when N_MWR = '0' else 
 			   (others => 'Z');
-
+		
 		RAM_DO <= MD;
 			
 end RTL;

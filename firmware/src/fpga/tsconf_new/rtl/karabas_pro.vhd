@@ -1106,43 +1106,16 @@ port map (
 );
 
 -- Zilog Z80A CPU
-U2: entity work.T80pa
-port map (
-    RESET_n     => cpu_reset_n,
-    CLK         => clk_28, 
-    CEN_p       => zpos,
-	 CEN_n       => zneg,
-
-    A           => cpu_a_bus,
-    DI          => cpu_di_bus,
-    DO          => cpu_do_bus,
-
-    WAIT_n      => cpu_wait_n,
-    INT_n       => cpu_int_n,
-    NMI_n       => cpu_nmi_n,
-    M1_n        => cpu_m1_n,
-    MREQ_n      => cpu_mreq_n,
-    IORQ_n      => cpu_iorq_n,
-    RD_n        => cpu_rd_n,
-    WR_n        => cpu_wr_n,
-    RFSH_n      => cpu_rfsh_n,
-    HALT_n      => cpu_halt_n,
-    BUSRQ_n     => '1',
-    BUSAK_n     => open,
-	 OUT0        => '1', -- 0 = OUT(C),0, 1 = OUT(C),255
-	 DIRset      => '0',
-	 REG         => open
-);
-
---U2: entity work.T80a
+--U2: entity work.T80pa
 --port map (
 --    RESET_n     => cpu_reset_n,
---    CLK_n       => zclk, 
---    CEN         => '1',
+--    CLK         => clk_28, 
+--    CEN_p       => zpos,
+--	 CEN_n       => zneg,
 --
 --    A           => cpu_a_bus,
---    DIN         => cpu_di_bus,
---    DOUT        => cpu_do_bus,
+--    DI          => cpu_di_bus,
+--    DO          => cpu_do_bus,
 --
 --    WAIT_n      => cpu_wait_n,
 --    INT_n       => cpu_int_n,
@@ -1155,8 +1128,35 @@ port map (
 --    RFSH_n      => cpu_rfsh_n,
 --    HALT_n      => cpu_halt_n,
 --    BUSRQ_n     => '1',
---    BUSAK_n     => open
+--    BUSAK_n     => open,
+--	 OUT0        => '1', -- 0 = OUT(C),0, 1 = OUT(C),255
+--	 DIRset      => '0',
+--	 REG         => open
 --);
+
+U2: entity work.T80a
+port map (
+    RESET_n     => cpu_reset_n,
+    CLK_n       => zclk, 
+    CEN         => '1',
+
+    A           => cpu_a_bus,
+    DIN         => cpu_di_bus,
+    DOUT        => cpu_do_bus,
+
+    WAIT_n      => cpu_wait_n,
+    INT_n       => cpu_int_n,
+    NMI_n       => cpu_nmi_n,
+    M1_n        => cpu_m1_n,
+    MREQ_n      => cpu_mreq_n,
+    IORQ_n      => cpu_iorq_n,
+    RD_n        => cpu_rd_n,
+    WR_n        => cpu_wr_n,
+    RFSH_n      => cpu_rfsh_n,
+    HALT_n      => cpu_halt_n,
+    BUSRQ_n     => '1',
+    BUSAK_n     => open
+);
 
 -- Zilog Z80A CPU
 U3: entity work.dram2sram
@@ -1201,7 +1201,7 @@ port map (
     c0          => c0,
     c2          => c2,
     iorq_s      => iorq_s,
-	 zclk_out    => zclk,
+	 zclk_out    => zclkn,
     zpos        => zpos,
     zneg        => zneg,
 	 turbo       => turbo,
@@ -1212,7 +1212,7 @@ port map (
     external_port => '0' --external_port
     );
 	 
---zclk <= not zclkn;
+zclk <= not zclkn;
 	 
 TS03: zmem
 port map (
@@ -1754,8 +1754,8 @@ port map (
 		-- debug ports to display
 		PORT_1 => csrom & ena_ram & rompg & cpu_halt_n,
 		PORT_2 => areset & kb_reset & loader_reset & loader_act & sd_cs_n & spi_sck & spi_sdo & DATA0,
-		PORT_3 => dram_rddata(15 downto 8), -- debug_rom,
-		PORT_4 => dram_rddata(7 downto 0), -- debug_ram,
+		PORT_3 => "00000000", --debug_rom,
+		PORT_4 => "00000000", --debug_ram,
 		
 		EN 	 => '1',
 		
@@ -1800,25 +1800,25 @@ go_arbiter <= go;
 process (CLK_28) 
 begin 
 	if (rising_edge(CLK_28)) then 
-		if cpu_rd_n = '0' and cpu_mreq_n = '0' and csrom = '1' then 
-			debug_rom <= rom_rddata;
+		if csrom = '1' then 
+			debug_rom <= dout_ram;
 		end if;
-		if cpu_rd_n = '0' and cpu_mreq_n = '0' and ena_ram = '1' then 
+		if ena_ram = '1' then 
 			debug_ram <= dout_ram;
 		end if;
 	end if;
 end process;
 
 cpu_di_bus <= 
-	 dout_ram    when ena_ram = '1' and cpu_mreq_n = '0' and cpu_rd_n = '0' else -- ram 
---	 debug_mc146818a_do_bus  when (cpu_iorq_n = '0' and cpu_rd_n = '0' and port_bff7 = '1' and port_eff7_reg(7) = '1') else        -- MC146818A
-    rtc_do_bus  when (cpu_iorq_n = '0' and cpu_rd_n = '0' and port_bff7 = '1' and port_eff7_reg(7) = '1') else        -- MC146818A
-    ssg_cn0_bus when (cpu_iorq_n = '0' and cpu_rd_n = '0' and cpu_a_bus = X"FFFD" and ssg_sel = '0') else    -- TurboSound
-    ssg_cn1_bus when (cpu_iorq_n = '0' and cpu_rd_n = '0' and cpu_a_bus = X"FFFD" and ssg_sel = '1') else
-    ms_z(3 downto 0) & '1' & not ms_b(2) & not ms_b(0) & not ms_b(1) when (cpu_iorq_n = '0' and cpu_rd_n = '0' and cpu_a_bus = x"FADF")  else
-    ms_x when (cpu_iorq_n = '0' and cpu_rd_n = '0' and cpu_a_bus = x"FBDF")  else
-    ms_y when (cpu_iorq_n = '0' and cpu_rd_n = '0' and cpu_a_bus = x"FFDF") else
-    zifi_do_bus when zifi_oe_n = '0' else
+	 dout_ram    when ena_ram = '1' else -- ram 
+	 debug_mc146818a_do_bus  when (cpu_iorq_n = '0' and cpu_rd_n = '0' and port_bff7 = '1' and port_eff7_reg(7) = '1') else        -- MC146818A
+--    rtc_do_bus  when (cpu_iorq_n = '0' and cpu_rd_n = '0' and port_bff7 = '1' and port_eff7_reg(7) = '1') else        -- MC146818A
+--    ssg_cn0_bus when (cpu_iorq_n = '0' and cpu_rd_n = '0' and cpu_a_bus = X"FFFD" and ssg_sel = '0') else    -- TurboSound
+--    ssg_cn1_bus when (cpu_iorq_n = '0' and cpu_rd_n = '0' and cpu_a_bus = X"FFFD" and ssg_sel = '1') else
+--    ms_z(3 downto 0) & '1' & not ms_b(2) & not ms_b(0) & not ms_b(1) when (cpu_iorq_n = '0' and cpu_rd_n = '0' and cpu_a_bus = x"FADF")  else
+--    ms_x when (cpu_iorq_n = '0' and cpu_rd_n = '0' and cpu_a_bus = x"FBDF")  else
+--    ms_y when (cpu_iorq_n = '0' and cpu_rd_n = '0' and cpu_a_bus = x"FFDF") else
+--    zifi_do_bus when zifi_oe_n = '0' else
     dout_ports when ena_ports = '1' else
 --    cpld_do when cpu_iorq_n = '0' and cpu_rd_n = '0' and cpu_m1_n = '1' else -- HDD / FDD
 	 im2vect     when intack = '1' else	 

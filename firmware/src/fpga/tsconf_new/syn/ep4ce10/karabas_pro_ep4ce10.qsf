@@ -199,12 +199,11 @@ set_parameter -name build_version 00000000
 
 
 
-set_global_assignment -name VHDL_FILE ../../rtl/T80/T80pa.vhd
-set_global_assignment -name VHDL_FILE ../../rtl/T80/T80_Reg.vhd
-set_global_assignment -name VHDL_FILE ../../rtl/T80/T80_Pack.vhd
-set_global_assignment -name VHDL_FILE ../../rtl/T80/T80_MCode.vhd
-set_global_assignment -name VHDL_FILE ../../rtl/T80/T80_ALU.vhd
-set_global_assignment -name VHDL_FILE ../../rtl/T80/T80.vhd
+set_global_assignment -name VHDL_FILE ../../rtl/t80se/T80a.vhd
+set_global_assignment -name VHDL_FILE ../../rtl/t80se/T80_Reg.vhd
+set_global_assignment -name VHDL_FILE ../../rtl/t80se/T80_MCode.vhd
+set_global_assignment -name VHDL_FILE ../../rtl/t80se/T80_ALU.vhd
+set_global_assignment -name VHDL_FILE ../../rtl/t80se/T80.vhd
 set_global_assignment -name VHDL_FILE ../../rtl/debug_osd.vhd
 set_global_assignment -name VHDL_FILE ../../rtl/rtc/mc146818a.vhd
 set_global_assignment -name VHDL_FILE ../../rtl/rtc/CMOS.vhd

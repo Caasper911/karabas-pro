@@ -199,10 +199,10 @@ module arbiter
   assign dram_req = |next_cycle;
   assign dram_rnw = next_cpu ? cpu_rnw : (next_dma ? dma_rnw : 1'b1);
   assign dram_addr = {22{next_cpu}} & cpu_addr
-                   | {22{next_vid}} & 1'b0 & video_addr
-                   | {22{next_ts}}  & 1'b0 & ts_addr
-                   | {22{next_tm}}  & 1'b0 & tm_addr
-                   | {22{next_dma}} & 1'b0 & dma_addr;
+                   | {22{next_vid}} & {1'b0, video_addr}
+                   | {22{next_ts }} & {1'b0, ts_addr}
+                   | {22{next_tm} } & {1'b0, tm_addr}
+                   | {22{next_dma}} & {1'b0, dma_addr};
 
   reg cpu_rnw_r;
   always @(posedge clk) if (c3)

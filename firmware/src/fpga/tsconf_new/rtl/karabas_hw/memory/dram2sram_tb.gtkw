@@ -1,0 +1,113 @@
+[*]
+[*] GTKWave Analyzer v3.3.104 (w)1999-2020 BSI
+[*] Sat Apr 22 21:21:02 2023
+[*]
+[dumpfile] "/home/andy/Documents/Projects/Retrocomp/ZX-Spectrum/karabas-pro-tsconf/firmware/src/fpga/tsconf_new/rtl/karabas_hw/memory/dram2sram_tb.ghw"
+[dumpfile_mtime] "Sat Apr 22 20:30:32 2023"
+[dumpfile_size] 1076082
+[savefile] "/home/andy/Documents/Projects/Retrocomp/ZX-Spectrum/karabas-pro-tsconf/firmware/src/fpga/tsconf_new/rtl/karabas_hw/memory/dram2sram_tb.gtkw"
+[timestart] 0
+[size] 1614 896
+[pos] 160 61
+*-29.000000 904000000 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+[treeopen] top.
+[treeopen] top.dram2sram_tb.
+[treeopen] top.dram2sram_tb.uut.
+[sst_width] 249
+[signals_width] 270
+[sst_expanded] 1
+[sst_vpaned_height] 249
+@28
+top.dram2sram_tb.clk28
+top.dram2sram_tb.c0
+top.dram2sram_tb.c1
+top.dram2sram_tb.c2
+top.dram2sram_tb.c3
+top.dram2sram_tb.dram_req
+top.dram2sram_tb.dram_rnw
+@c00022
+#{top.dram2sram_tb.dram_addr[21:0]} top.dram2sram_tb.dram_addr[21] top.dram2sram_tb.dram_addr[20] top.dram2sram_tb.dram_addr[19] top.dram2sram_tb.dram_addr[18] top.dram2sram_tb.dram_addr[17] top.dram2sram_tb.dram_addr[16] top.dram2sram_tb.dram_addr[15] top.dram2sram_tb.dram_addr[14] top.dram2sram_tb.dram_addr[13] top.dram2sram_tb.dram_addr[12] top.dram2sram_tb.dram_addr[11] top.dram2sram_tb.dram_addr[10] top.dram2sram_tb.dram_addr[9] top.dram2sram_tb.dram_addr[8] top.dram2sram_tb.dram_addr[7] top.dram2sram_tb.dram_addr[6] top.dram2sram_tb.dram_addr[5] top.dram2sram_tb.dram_addr[4] top.dram2sram_tb.dram_addr[3] top.dram2sram_tb.dram_addr[2] top.dram2sram_tb.dram_addr[1] top.dram2sram_tb.dram_addr[0]
+@28
+top.dram2sram_tb.dram_addr[21]
+top.dram2sram_tb.dram_addr[20]
+top.dram2sram_tb.dram_addr[19]
+top.dram2sram_tb.dram_addr[18]
+top.dram2sram_tb.dram_addr[17]
+top.dram2sram_tb.dram_addr[16]
+top.dram2sram_tb.dram_addr[15]
+top.dram2sram_tb.dram_addr[14]
+top.dram2sram_tb.dram_addr[13]
+top.dram2sram_tb.dram_addr[12]
+top.dram2sram_tb.dram_addr[11]
+top.dram2sram_tb.dram_addr[10]
+top.dram2sram_tb.dram_addr[9]
+top.dram2sram_tb.dram_addr[8]
+top.dram2sram_tb.dram_addr[7]
+top.dram2sram_tb.dram_addr[6]
+top.dram2sram_tb.dram_addr[5]
+top.dram2sram_tb.dram_addr[4]
+top.dram2sram_tb.dram_addr[3]
+top.dram2sram_tb.dram_addr[2]
+top.dram2sram_tb.dram_addr[1]
+top.dram2sram_tb.dram_addr[0]
+@1401200
+-group_end
+@28
+#{top.dram2sram_tb.dram_bsel[1:0]} top.dram2sram_tb.dram_bsel[1] top.dram2sram_tb.dram_bsel[0]
+@22
+#{top.dram2sram_tb.dram_wrdata[15:0]} top.dram2sram_tb.dram_wrdata[15] top.dram2sram_tb.dram_wrdata[14] top.dram2sram_tb.dram_wrdata[13] top.dram2sram_tb.dram_wrdata[12] top.dram2sram_tb.dram_wrdata[11] top.dram2sram_tb.dram_wrdata[10] top.dram2sram_tb.dram_wrdata[9] top.dram2sram_tb.dram_wrdata[8] top.dram2sram_tb.dram_wrdata[7] top.dram2sram_tb.dram_wrdata[6] top.dram2sram_tb.dram_wrdata[5] top.dram2sram_tb.dram_wrdata[4] top.dram2sram_tb.dram_wrdata[3] top.dram2sram_tb.dram_wrdata[2] top.dram2sram_tb.dram_wrdata[1] top.dram2sram_tb.dram_wrdata[0]
+@29
+top.dram2sram_tb.ram_nwr
+@28
+top.dram2sram_tb.ram_nrd
+@c00022
+#{top.dram2sram_tb.dram_rddata[15:0]} top.dram2sram_tb.dram_rddata[15] top.dram2sram_tb.dram_rddata[14] top.dram2sram_tb.dram_rddata[13] top.dram2sram_tb.dram_rddata[12] top.dram2sram_tb.dram_rddata[11] top.dram2sram_tb.dram_rddata[10] top.dram2sram_tb.dram_rddata[9] top.dram2sram_tb.dram_rddata[8] top.dram2sram_tb.dram_rddata[7] top.dram2sram_tb.dram_rddata[6] top.dram2sram_tb.dram_rddata[5] top.dram2sram_tb.dram_rddata[4] top.dram2sram_tb.dram_rddata[3] top.dram2sram_tb.dram_rddata[2] top.dram2sram_tb.dram_rddata[1] top.dram2sram_tb.dram_rddata[0]
+@28
+top.dram2sram_tb.dram_rddata[15]
+top.dram2sram_tb.dram_rddata[14]
+top.dram2sram_tb.dram_rddata[13]
+top.dram2sram_tb.dram_rddata[12]
+top.dram2sram_tb.dram_rddata[11]
+top.dram2sram_tb.dram_rddata[10]
+top.dram2sram_tb.dram_rddata[9]
+top.dram2sram_tb.dram_rddata[8]
+top.dram2sram_tb.dram_rddata[7]
+top.dram2sram_tb.dram_rddata[6]
+top.dram2sram_tb.dram_rddata[5]
+top.dram2sram_tb.dram_rddata[4]
+top.dram2sram_tb.dram_rddata[3]
+top.dram2sram_tb.dram_rddata[2]
+top.dram2sram_tb.dram_rddata[1]
+top.dram2sram_tb.dram_rddata[0]
+@1401200
+-group_end
+@22
+#{top.dram2sram_tb.ram_a[22:0]} top.dram2sram_tb.ram_a[22] top.dram2sram_tb.ram_a[21] top.dram2sram_tb.ram_a[20] top.dram2sram_tb.ram_a[19] top.dram2sram_tb.ram_a[18] top.dram2sram_tb.ram_a[17] top.dram2sram_tb.ram_a[16] top.dram2sram_tb.ram_a[15] top.dram2sram_tb.ram_a[14] top.dram2sram_tb.ram_a[13] top.dram2sram_tb.ram_a[12] top.dram2sram_tb.ram_a[11] top.dram2sram_tb.ram_a[10] top.dram2sram_tb.ram_a[9] top.dram2sram_tb.ram_a[8] top.dram2sram_tb.ram_a[7] top.dram2sram_tb.ram_a[6] top.dram2sram_tb.ram_a[5] top.dram2sram_tb.ram_a[4] top.dram2sram_tb.ram_a[3] top.dram2sram_tb.ram_a[2] top.dram2sram_tb.ram_a[1] top.dram2sram_tb.ram_a[0]
+@c00022
+#{top.dram2sram_tb.ram_di[7:0]} top.dram2sram_tb.ram_di[7] top.dram2sram_tb.ram_di[6] top.dram2sram_tb.ram_di[5] top.dram2sram_tb.ram_di[4] top.dram2sram_tb.ram_di[3] top.dram2sram_tb.ram_di[2] top.dram2sram_tb.ram_di[1] top.dram2sram_tb.ram_di[0]
+@28
+top.dram2sram_tb.ram_di[7]
+top.dram2sram_tb.ram_di[6]
+top.dram2sram_tb.ram_di[5]
+top.dram2sram_tb.ram_di[4]
+top.dram2sram_tb.ram_di[3]
+top.dram2sram_tb.ram_di[2]
+top.dram2sram_tb.ram_di[1]
+top.dram2sram_tb.ram_di[0]
+@1401200
+-group_end
+@c00022
+#{top.dram2sram_tb.ram_do[7:0]} top.dram2sram_tb.ram_do[7] top.dram2sram_tb.ram_do[6] top.dram2sram_tb.ram_do[5] top.dram2sram_tb.ram_do[4] top.dram2sram_tb.ram_do[3] top.dram2sram_tb.ram_do[2] top.dram2sram_tb.ram_do[1] top.dram2sram_tb.ram_do[0]
+@28
+top.dram2sram_tb.ram_do[7]
+top.dram2sram_tb.ram_do[6]
+top.dram2sram_tb.ram_do[5]
+top.dram2sram_tb.ram_do[4]
+top.dram2sram_tb.ram_do[3]
+top.dram2sram_tb.ram_do[2]
+top.dram2sram_tb.ram_do[1]
+top.dram2sram_tb.ram_do[0]
+@1401200
+-group_end
+[pattern_trace] 1
+[pattern_trace] 0

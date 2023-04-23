@@ -164,7 +164,7 @@ signal osd_command      : std_logic_vector(15 downto 0);
 signal locked           : std_logic := '0';
 signal clk56            : std_logic := '0';
 signal clk84            : std_logic := '0';
-signal clk28            : std_logic := '0';
+signal clk28            : std_logic := '1';
 signal clk8             : std_logic := '0';
 signal clk_bus          : std_logic := '0';
 signal clk_bus_port     : std_logic := '0';
@@ -202,7 +202,7 @@ U01: entity work.altpll0
 port map (
     inclk0        => CLK_50MHZ, -- 50Mhz
     locked        => locked,
-    c0            => clk28,
+    c0            => open,
     c1            => clk8,
     c2            => clk84,
 	 c3            => clk56
@@ -256,7 +256,7 @@ port map(
 U04: entity work.memory 
 port map ( 
     -- clock
-    CLK           => clk28,
+    CLK           => clk_bus,
     
     -- loader signals
     LOADER_ACT    => loader_act,
@@ -451,6 +451,13 @@ CLK_14 <= clk_div2;
 CLK_84 <= clk84;
 CLK_8  <= clk8;
 CLK_56 <= clk56;
+
+process (clk56) 
+begin 
+	if rising_edge(clk56) then 
+		clk28 <= not clk28;
+	end if;
+end process;
 
 SPI_SCK <= flash_clk when loader_act = '1' else SD_SCK;
 reset <= areset or kb_reset or loader_reset or loader_act;

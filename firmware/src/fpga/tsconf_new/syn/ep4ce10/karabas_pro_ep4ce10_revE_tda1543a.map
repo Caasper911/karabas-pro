@@ -1,13 +1,13 @@
 BLOCK		START ADDRESS		END ADDRESS
 
 Page_0		0x00000000		0x00059D8A
-zxevo.hex		0x00100000		0x0017FFFF
+DiagROM.v50.hex		0x00100000		0x00103FFF
 cfg_revE_tda1543a.hex		0x001F0000		0x001F0000
 
 
 
 Notes:
 
-- Data checksum for this conversion is 0x172D5CD8
+- Data checksum for this conversion is 0x1A8DD777
 
 - All the addresses in this file are byte addresses
